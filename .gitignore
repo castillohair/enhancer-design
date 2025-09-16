@@ -12,3 +12,6 @@
 
 # Ignore any folder named __pycache__ anywhere in the repository
 **/__pycache__/
+
+# Ignore all .h5 model files inside subdirectories of the models directory
+/models/*/*.h5
