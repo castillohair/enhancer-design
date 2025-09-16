@@ -20,7 +20,7 @@ This repository contains four main elements:
 
 - **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
 
-- **Atlas of synthetic enhancers**. We include two repositories of synthetic enhancers designed with DHS64 (~32k, 500 per target) or DHS733 (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
+- **Atlas of synthetic enhancers**. We include two repositories of synthetic enhancers designed with [DHS64]() (~32k, 500 per target) or [DHS733]() (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
 
 Additional folders include:
 - [`data`](./data): Data necessary for model training and analysis, and scripts to download such data.
