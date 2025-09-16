@@ -20,10 +20,10 @@ This repository contains four main elements:
 
 - **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
 
-- **Atlases of synthetic enhancers**. We include two repositories of synthetic enhancers designed with DHS64 (~32k, 500 per target) or DHS733 (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
+- **Atlas of synthetic enhancers**. We include two repositories of synthetic enhancers designed with DHS64 (~32k, 500 per target) or DHS733 (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
 
 Additional folders include:
-- [`data`](./data): External data necessary for model training and analysis.
+- [`data`](./data): Data necessary for model training and analysis, and scripts to download such data.
 - [`utils`](./utils): python code used across the repo.
 
 Individual folders contain their own README.md file with more specific instructions.
@@ -35,13 +35,13 @@ Coming soon.
 
 ### Use pre-designed synthetic enhancers
 
-Synthetic enhancers can be extracted from the included Atlases without running any code. In general, you will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64]() and [DHS733]() modeled samples, and then find relevant enhancers in the Atlas files.
+Synthetic enhancers can be extracted from the included Atlas without running any code. In general, you will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64]() and [DHS733]() modeled samples, and then find relevant enhancers in the Atlas files.
 
-Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. Thus, we recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an enhancer with the desired activity can be found.
+Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. We recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an experimentally characterized enhancer with the desired activity can be found.
 
 ### Design new enhancers
 
-Reasons to generate new enhancers beyond the Atlases may include: 1) designing enhancers with different lengths, 2) fine-tuning target activity, 3) targeting multiple cell types.
+Reasons to generate new enhancers beyond the Atlas may include: 1) designing enhancers with different lengths, 2) fine-tuning target activity, 3) targeting multiple cell types.
 
 To design new enhancers, packages in the "Requirements" section above must be present, and the appropriate model weights should be downloaded into [`models`](./models/), for which we provide download scripts. Then, start from the appropriate python file in the `design` folder and modify accordingly.
 
