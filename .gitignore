@@ -6,3 +6,7 @@
 /data/*.tsv
 /data/*.json
 /data/*.h5
+
+# Ignore any folder named .ipynb_checkpoints anywhere in the repository
+**/.ipynb_checkpoints
+

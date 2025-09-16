@@ -24,7 +24,7 @@ This repository contains four main elements:
 
 Additional folders include:
 - [`data`](./data): External data necessary for model training and analysis.
-- `utils`: python code used across the repo.
+- [`utils`](./utils): python code used across the repo.
 
 Individual folders contain their own README.md file with more specific instructions.
 
