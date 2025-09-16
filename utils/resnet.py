@@ -7,9 +7,9 @@ def resblock(x, filters, kernel_size, dilation_rate=1, first_conv_activation='re
     """
     Constructs a residual block with two convolutional layers and a skip connection.
 
-    Parameters:
-    -----------
-    x : tf.Tensor
+    Parameters
+    ----------
+    x : tensorflow.Tensor
         Input tensor to the residual block.
     filters : int
         Number of filters for the convolutional layers.
@@ -20,9 +20,9 @@ def resblock(x, filters, kernel_size, dilation_rate=1, first_conv_activation='re
     first_conv_activation : str, optional
         Activation function to use after the first convolution. Default is 'relu'.
 
-    Returns:
-    --------
-    tf.Tensor
+    Returns
+    -------
+    tensorflow.Tensor
         Output tensor after applying the residual block.
 
     """
@@ -65,9 +65,9 @@ def resgroup(
     """
     Constructs a group of residual blocks.
     
-    Parameters:
-    -----------
-    x : tf.Tensor
+    Parameters
+    ----------
+    x : tensorflow.Tensor
         Input tensor to the residual group.
     n_blocks_per_group : int
         Number of residual blocks in the group.
@@ -80,9 +80,9 @@ def resgroup(
     first_conv_activation : str, optional
         Activation function to use after the first convolution in each block. Default is 'relu'.
 
-    Returns:
-    --------
-    tf.Tensor
+    Returns
+    -------
+    tensorflow.Tensor
         Output tensor after applying the residual group.
 
     """
@@ -105,8 +105,8 @@ def make_model(
     """
     Constructs a residual neural network model with a DNA sequence input.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     input_seq_length : int
         Maximum length of the input DNA sequence.
     groups : int, optional
@@ -127,9 +127,9 @@ def make_model(
         Activation function(s) for the final dense layer(s). Use 'linear' for regression
         and 'sigmoid' for binary classification.
 
-    Returns:
-    --------
-    tf.keras.Model
+    Returns
+    -------
+    tensorflow.keras.Model
         Residual neural network as a Keras model.
 
     """
@@ -243,18 +243,18 @@ def load_model(model_path, output_transformation_fpath=None):
     If output_transformation_fpath is provided, it will be used to apply a linear
     transformation to the model outputs. Note that this assumes the model has a single output.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     model_path : str
         Path to the saved Keras model.
     output_transformation_fpath : str, optional
         Path to a .npy file containing the output transformation matrix.
 
-    Returns:
-    --------
-    tf.keras.Model
+    Returns
+    -------
+    tensorflow.keras.Model
         Loaded Keras model, possibly with transformed outputs.
-        
+
     """
     # Load the model from the specified path
     model = tensorflow.keras.models.load_model(model_path)

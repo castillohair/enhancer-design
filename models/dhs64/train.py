@@ -25,8 +25,8 @@ class SeqGenerator(tensorflow.keras.utils.Sequence):
     """
     Generates data batches from a DHS dataframe.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     data_df : pandas.DataFrame
         DHS data to batch. Must include columns:
         - ('metadata', 'raw_sequence'): raw DNA sequences (str)
@@ -261,7 +261,7 @@ def train_model(
     )
 
     # Save model
-    model.save(f'{output_name}.h5', include_optimizer=False)
+    model.save(f'{output_name}.h5', save_traces=False, include_optimizer=False)
 
     print(f"Done with {output_name}.")
 

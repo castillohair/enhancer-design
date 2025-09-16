@@ -9,4 +9,4 @@ echo 'dhs64_training/selected_biosample_metadata.tsv'
 echo 'dhs64_training/dhs_metadata_logsignal_binary.csv.gz'
 
 echo 'dhs733_training/dhs_seqs_onehot.h5'
-echo 'dhs733_training/dhs_log_quantnorm_signal.h5'
+echo 'dhs733_training/dhs_metadata_logsignal.h5'
