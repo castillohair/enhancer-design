@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # TODO: Add actual download commands
-echo 'dhs64/dhs64_nofilt_data_split_3.h5'
+echo 'dhs64_nofilt_data_split_3.h5'

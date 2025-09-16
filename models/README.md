@@ -4,10 +4,10 @@
 
 The following scripts can be run to download model weights:
 
-- `download_dhs64_weights.sh`: DHS64 model weights.
-- `download_dhs64_nofilt_weights.sh`: DHS64 model trained without filtering the training data (see below). Only used for model performance analysis and not recommended for any other workflow, particularly for enhancer design.
-- `download_dhs64_mpra_weights.sh`: DHS64-MRPA model weights.
-- `download_dhs733_weights.sh`: DHS733 model weights.
+- `dhs64/download_weights.sh`: DHS64 model weights.
+- `dhs64/download_nofilt_weights.sh`: DHS64 model trained without filtering the training data (see below). Only used for model performance analysis and not recommended for any other workflow, particularly for enhancer design.
+- `dhs64_mpra/download_weights.sh`: DHS64-MRPA model weights.
+- `dhs733/download_weights.sh`: DHS733 model weights.
 
 ## Data processing
 
