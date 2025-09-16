@@ -12,7 +12,7 @@ This repository contains four main elements:
 
 - **Sequence-to-function predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictor classes, each with three individual models independently trained on different chromosome-based data splits:
     
-    - **DHS64**: *accessibility* predictor trained on a subset of 64 samples in the DNase I Index, selected to represent a wide variety of tissues and cell types. 
+    - **DHS64**: *accessibility* predictor trained on a [subset of 64 samples](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) in the DNase I Index, selected to represent a wide variety of tissues and cell types. 
     - **DH64-MPRA**: *enhancer activity* predictor, developed by finetuning DHS64 models on MPRA data from 12 cell lines collected by us.
     - **DHS733**: *accessibility* predictor trained on all 733 DNase I Index samples.
     
@@ -35,7 +35,7 @@ Coming soon.
 
 ### Use pre-designed synthetic enhancers
 
-Synthetic enhancers can be extracted from the included Atlas without running any code. In general, you will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64]() and [DHS733]() modeled samples, and then find relevant enhancers in the Atlas files.
+Synthetic enhancers can be extracted from the included Atlas without running any code. In general, you will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) and [DHS733](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx) modeled samples, and then find relevant enhancers in the Atlas files.
 
 Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. We recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an experimentally characterized enhancer with the desired activity can be found.
 
