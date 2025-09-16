@@ -16,9 +16,9 @@ This repository contains four main elements:
     - **DH64-MPRA**: *enhancer activity* predictor, developed by finetuning DHS64 models on MPRA data from 12 cell lines collected by us.
     - **DHS733**: *accessibility* predictor trained on all 733 DNase I Index samples.
     
-- **Enhancer design code**. The folder `design` contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use updated versions of **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [github](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [github](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple simultaneous cell types, with maximal or graded responses.
+- **Enhancer design code**. The folder [`design`](./design/) contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use updated versions of **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [github](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [github](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple simultaneous cell types, with maximal or graded responses.
 
-- **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and controls, via MPRAs in 10 target cell lines. The folder `analysis` contains code to analyze those results and generate figures in our publication.
+- **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
 
 - **Atlases of synthetic enhancers**. We include two repositories of synthetic enhancers designed with DHS64 (~32k, 500 per target) or DHS733 (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
 
@@ -43,15 +43,15 @@ Note that a subset of DHS64-designed enhancers has been experimentally validated
 
 Reasons to generate new enhancers beyond the Atlases may include: 1) designing enhancers with different lengths, 2) fine-tuning target activity, 3) targeting multiple cell types.
 
-To design new enhancers, packages in the "Requirements" section above must be present, and model weights should be downloaded using the appropriate download script in `models`. Then, start from the appropriate script in the `design` folder and modify accordingly.
+To design new enhancers, packages in the "Requirements" section above must be present, and model weights should be downloaded using the appropriate download script in [`models`](./models/). Then, start from the appropriate script in the `design` folder and modify accordingly.
 
 In addition, we trained generative models called [Deep Exploration Networks](https://doi.org/10.1016/j.cels.2020.05.007) to target each of the DHS64-modeled samples. If the goal is to obtain additional sequences targeted to these samples, pre-trained DENs can be used via included scripts.
 
-See the README.md file in the `design` folder for more information.
+See the README.md file in the [`design`](./design/) folder for more information.
 
 ### Train models
 
-Processed DNase I Index data is necessary to reproduce our model training workflow. Processed data can be downloaded via the `download_processed_data.sh` script in the `data` folder. The [`process_data_for_training.ipynb`](./data/process_data_for_training.ipynb) jupyter notebook reproduces our processing workflow starting from raw, previously-published data sources.
+Processed DNase I Index data is necessary to reproduce our model training workflow. Processed data can be downloaded via the `download_processed_data.sh` script in the [`data`](./data/) folder. The [`process_data_for_training.ipynb`](./data/process_data_for_training.ipynb) jupyter notebook reproduces our processing workflow starting from raw, previously-published data sources.
 
 Model training can be reproduced via the scripts included in the `dhs64`, `dhs64_mpra`, and `dhs733` subfolders inside `models`. `{model_name}_performance` subfolders contain jupyter notebooks that evaluate prediction performance.
 
@@ -59,7 +59,7 @@ See the README.md file in the `model` folder for more information.
 
 ### Reproduce publication analysis
 
-Each analysis included in `analysis` will have its own workflow and requirements. See the folder's README.md file for more information.
+Each analysis included in [`analysis`](./analysis/) will have its own workflow and requirements. See the folder's README.md file for more information.
 
 ## Citation
 
