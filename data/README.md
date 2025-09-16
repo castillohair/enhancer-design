@@ -1,10 +1,10 @@
 # Datasets
 
-The following datasets are used throughout sequence design and analysis:
+The following datasets are used in this repo:
 
 ## Data for training accessibility models
 
-Located in the `dhs_index` subfolder. Processed data can be downloaded via the included [`download_processed_data.sh`](./dhs_index/download_processed_data.sh) script. The [`process_data.ipynb`](./dhs_index/process_data.ipynb) jupyter notebook reproduces our data processing workflow starting from raw, previously-published sources, but re-running this should not be necessary in most cases.
+Located in the [`dhs_index`](./dhs_index/) subfolder. Processed data necessary for model training and some analysis can be downloaded via the included [`download_processed_data.sh`](./dhs_index/download_processed_data.sh) script. The [`process_data.ipynb`](./dhs_index/process_data.ipynb) jupyter notebook reproduces our data processing workflow starting from raw, previously-published sources, but re-running this should not be necessary in most cases.
 
 ## Cell line and mouse retina MPRA results
 
