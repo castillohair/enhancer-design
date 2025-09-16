@@ -18,7 +18,7 @@ This repository contains four main elements:
     
 - **Enhancer design code**. The folder [`design`](./design/) contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use updated versions of **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [github](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [github](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple simultaneous cell types, with maximal or graded responses.
 
-- **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
+- **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and natural controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
 
 - **Atlas of synthetic enhancers**. We include two repositories of synthetic enhancers designed with [DHS64]() (~32k, 500 per target) or [DHS733]() (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
 
