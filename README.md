@@ -10,7 +10,7 @@ This repository is part of the following article: Castillo-Hair et al. *Programm
 
 This repository contains four main elements:
 
-- **Sequence-to-function predictors**. The folder `models` contains code to train predictors and to download pretrained weights. We use three predictor classes, each with three individual models independently trained on different chromosome-based data splits:
+- **Sequence-to-function predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictor classes, each with three individual models independently trained on different chromosome-based data splits:
     
     - **DHS64**: *accessibility* predictor trained on a subset of 64 samples in the DNase I Index, selected to represent a wide variety of tissues and cell types. 
     - **DH64-MPRA**: *enhancer activity* predictor, developed by finetuning DHS64 models on MPRA data from 12 cell lines collected by us.
