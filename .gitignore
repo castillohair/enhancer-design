@@ -10,3 +10,5 @@
 # Ignore any folder named .ipynb_checkpoints anywhere in the repository
 **/.ipynb_checkpoints
 
+# Ignore any folder named __pycache__ anywhere in the repository
+**/__pycache__/

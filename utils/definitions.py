@@ -1,0 +1,8 @@
+DATA_SPLITS_CHRS_PATH = "data/data_splits_chrs.json"
+DATA_SPLITS_DHS_IDX_PATH = "data/data_splits_dhs_idx.h5"
+
+DHS64_TRAIN_DATA_DIR = "data/dhs64_training"
+DHS64_TRAIN_DATA_PATH = f"{DHS64_TRAIN_DATA_DIR}/dhs_metadata_logsignal_binary.csv.gz"
+DHS64_TRAIN_META_PATH = f"{DHS64_TRAIN_DATA_DIR}/selected_biosample_metadata.tsv"
+
+MODEL_MAX_SEQ_LEN = 500
