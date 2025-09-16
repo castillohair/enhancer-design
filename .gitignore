@@ -1,0 +1,8 @@
+# Ignore big data files
+/data/*.txt.gz
+/data/*.bed.gz
+/data/*.gtf.gz
+/data/*.csv
+/data/*.tsv
+/data/*.json
+/data/*.h5
