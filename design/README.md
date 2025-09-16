@@ -1,1 +1,1 @@
-# TODO: Add description of how to use design scripts
+Coming soon!

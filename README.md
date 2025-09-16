@@ -43,7 +43,7 @@ Note that a subset of DHS64-designed enhancers has been experimentally validated
 
 Reasons to generate new enhancers beyond the Atlases may include: 1) designing enhancers with different lengths, 2) fine-tuning target activity, 3) targeting multiple cell types.
 
-To design new enhancers, packages in the "Requirements" section above must be present, and model weights should be downloaded using the appropriate download script in [`models`](./models/). Then, start from the appropriate script in the `design` folder and modify accordingly.
+To design new enhancers, packages in the "Requirements" section above must be present, and the appropriate model weights should be downloaded into [`models`](./models/), for which we provide download scripts. Then, start from the appropriate python file in the `design` folder and modify accordingly.
 
 In addition, we trained generative models called [Deep Exploration Networks](https://doi.org/10.1016/j.cels.2020.05.007) to target each of the DHS64-modeled samples. If the goal is to obtain additional sequences targeted to these samples, pre-trained DENs can be used via included scripts.
 
@@ -55,7 +55,7 @@ Processed DNase I Index data is necessary to reproduce our model training workfl
 
 Model training can be reproduced via the scripts included in the [`models/dhs64`](./models/dhs64/), [`models/dhs64_mpra`](./models/dhs64_mpra/), and [`models/dhs733`](models/dhs733/) subfolders. `{model_name}_performance` subfolders contain jupyter notebooks that evaluate prediction performance.
 
-See the README.md file in the `model` folder for more information.
+See the README.md file in the [`model`](/models/) folder for more information.
 
 ### Reproduce publication analysis
 
