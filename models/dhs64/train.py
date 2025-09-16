@@ -113,7 +113,7 @@ class ModelCheckpoint(tensorflow.keras.callbacks.Callback):
 
 # Main training function
 def train_model(
-        chr_split_idx=0,
+        data_split_idx=0,
         numsamples_max=None,
         starting_model=None,
         output_name=None,
@@ -123,7 +123,7 @@ def train_model(
     # If continuing from a previous model and the default name is the same as the starting model,
     # add "_continued" to the output name.
     if output_name is None:
-        output_name = f"dhs64_chr_split_{chr_split_idx}"
+        output_name = f"dhs64_data_split_{data_split_idx}"
         if starting_model is not None and output_name==starting_model:
             output_name += "_continued"
 
@@ -150,19 +150,19 @@ def train_model(
     print(biosamples)
 
     # Load chromsome split
-    print(f"Separating data by chromosome split. Using split {chr_split_idx}.")
+    print(f"Separating data by chromosome split. Using split {data_split_idx}.")
 
     with open(DATA_SPLITS_CHRS_PATH, 'r') as f:
-        chr_splits_info = json.load(f)
-    chr_split_info = chr_splits_info[chr_split_idx]
+        data_splits_info = json.load(f)
+    data_split_info = data_splits_info[data_split_idx]
     
-    print(f"Chromsomes for training: {chr_split_info['train']}")
-    print(f"Chromsomes for validation: {chr_split_info['val']}")
-    print(f"Chromsomes for testing: {chr_split_info['test']}")
+    print(f"Chromsomes for training: {data_split_info['train']}")
+    print(f"Chromsomes for validation: {data_split_info['val']}")
+    print(f"Chromsomes for testing: {data_split_info['test']}")
 
     # Separate training and validation datasets
-    dhs_df_train = dhs_df[dhs_df[('metadata', 'seqname')].isin(chr_split_info['train'])]
-    dhs_df_val = dhs_df[dhs_df[('metadata', 'seqname')].isin(chr_split_info['val'])]
+    dhs_df_train = dhs_df[dhs_df[('metadata', 'seqname')].isin(data_split_info['train'])]
+    dhs_df_val = dhs_df[dhs_df[('metadata', 'seqname')].isin(data_split_info['val'])]
 
     print(f"{len(dhs_df_train):,} DHS sites loaded for training.")
     print(f"{len(dhs_df_val):,} DHS sites loaded for validation.")
@@ -174,12 +174,21 @@ def train_model(
             (dhs_df_train[('metadata', 'numsamples_selected')] > 0) &
             (dhs_df_train[('metadata', 'numsamples_selected')] <= numsamples_max)
         ]
-        print(f"{len(dhs_df_train):,} DHSs remain for training after filtering.")
         dhs_df_val = dhs_df_val[
             (dhs_df_val[('metadata', 'numsamples_selected')] > 0) &
             (dhs_df_val[('metadata', 'numsamples_selected')] <= numsamples_max)
         ]
-        print(f"{len(dhs_df_val):,} DHSs remain for validation after filtering.")
+    else:
+        # Still filter out DHSs that are not active in any biosample
+        print(f"Filtering training data to keep only DHSs active in at least 1 biosample...")
+        dhs_df_train = dhs_df_train[
+            dhs_df_train[('metadata', 'numsamples_selected')] > 0
+        ]
+        dhs_df_val = dhs_df_val[
+            dhs_df_val[('metadata', 'numsamples_selected')] > 0
+        ]
+    print(f"{len(dhs_df_train):,} DHSs remain for training after filtering.")
+    print(f"{len(dhs_df_val):,} DHSs remain for validation after filtering.")
 
     # Add reverse complement to training data
     # Get reverse complement of sequences, then construct dataframe
@@ -270,13 +279,13 @@ if __name__=='__main__':
     # Read command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--chr-split-idx', type=int, default=0, help='Chromosome split index (0-9)',
+        '--data-split-idx', type=int, default=0, help='Data split index (0-9).',
     )
     parser.add_argument(
-        '--numsamples-max', type=int, default=None, help='Maximum number of biosamples where DHSs used for training should be active',
+        '--numsamples-max', type=int, default=None, help='Maximum number of biosamples where DHSs used for training should be active.',
     )
     parser.add_argument(
-        '--starting-model', type=str, default=None, help='Path to starting model (if any)',
+        '--starting-model', type=str, default=None, help='Name of starting model file to continue training from.',
     )
     parser.add_argument(
         '--output-name', type=str, default=None, help='Name of the output model. If not, a default name will be used.',
@@ -285,7 +294,7 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     train_model(
-        chr_split_idx=args.chr_split_idx,
+        data_split_idx=args.data_split_idx,
         numsamples_max=args.numsamples_max,
         starting_model=args.starting_model,
         output_name=args.output_name,

@@ -219,7 +219,7 @@ class SequentialLearningScheduler(tensorflow.keras.callbacks.Callback):
 
 # Main training function
 def train_model(
-        chr_split_idx=0,
+        data_split_idx=0,
         starting_model=None,
         output_name=None,
     ):
@@ -228,7 +228,7 @@ def train_model(
     # If continuing from a previous model and the default name is the same as the starting model,
     # add "_continued" to the output name.
     if output_name is None:
-        output_name = f"dhs733_chr_split_{chr_split_idx}"
+        output_name = f"dhs733_data_split_{data_split_idx}"
         if starting_model is not None and output_name==starting_model:
             output_name += "_continued"
 
@@ -239,11 +239,11 @@ def train_model(
         print(f"Continuing training from model: {starting_model}")
 
     # Load sequence indices for current split
-    print(f"Using data split {chr_split_idx}.")
+    print(f"Using data split {data_split_idx}.")
     with tables.open_file(DATA_SPLITS_DHS_IDX_PATH, mode='r') as f:
-        train_split_group = f.get_node(f'/split_{chr_split_idx}/train')
+        train_split_group = f.get_node(f'/split_{data_split_idx}/train')
         seq_train_indices = train_split_group.indices[:]
-        val_split_group = f.get_node(f'/split_{chr_split_idx}/val')
+        val_split_group = f.get_node(f'/split_{data_split_idx}/val')
         seq_val_indices = val_split_group.indices[:]
     seq_train_indices = numpy.where(seq_train_indices)[0]
     seq_val_indices = numpy.where(seq_val_indices)[0]
@@ -318,10 +318,10 @@ if __name__=='__main__':
     # Read command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--chr-split-idx', type=int, default=0, help='Chromosome split index (0-9)',
+        '--data-split-idx', type=int, default=0, help='Data split index (0-9).',
     )
     parser.add_argument(
-        '--starting-model', type=str, default=None, help='Path to starting model (if any)',
+        '--starting-model', type=str, default=None, help='Name of starting model file to continue training from.',
     )
     parser.add_argument(
         '--output-name', type=str, default=None, help='Name of the output model. If not, a default name will be used.',
@@ -330,7 +330,7 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     train_model(
-        chr_split_idx=args.chr_split_idx,
+        data_split_idx=args.data_split_idx,
         starting_model=args.starting_model,
         output_name=args.output_name,
     )
