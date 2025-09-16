@@ -1,11 +1,15 @@
 # Ignore big data files
-/data/*.txt.gz
-/data/*.bed.gz
-/data/*.gtf.gz
-/data/*.csv
-/data/*.tsv
-/data/*.json
-/data/*.h5
+/data/**/*.txt.gz
+/data/**/*.bed.gz
+/data/**/*.gtf.gz
+/data/**/*.fna.gz
+/data/**/*.csv
+/data/**/*.csv.gz
+/data/**/*.tsv
+/data/**/*.tsv.gz
+/data/**/*.json
+/data/**/*.h5
+/data/**/*.RData
 
 # Ignore any folder named .ipynb_checkpoints anywhere in the repository
 **/.ipynb_checkpoints

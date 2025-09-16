@@ -51,11 +51,9 @@ See the README.md file in the [`design`](./design/) folder for more information.
 
 ### Train models
 
-Processed DNase I Index data is necessary to reproduce our model training workflow. Processed data can be downloaded via the [`download_processed_data.sh`](./data/download_processed_data.sh) script in the [`data`](./data/) folder. The [`process_data_for_training.ipynb`](./data/process_data_for_training.ipynb) jupyter notebook reproduces our workflow for generating processed data starting from raw, previously-published sources, but re-running this should not be necessary in most cases.
+Processed DNase I Index data is necessary to reproduce our model training workflow. Processed data can be downloaded via the included [`download_processed_data.sh`](./data/dhs_index/download_processed_data.sh) script in the [`data/dhs_index`](./data/dhs_index) folder. For more information see the ["Data for training accessibility models"](./data/README.md#data-for-training-accessibility-models) section in the `data` folder's `README` file.
 
-Model training can be reproduced via the scripts included in the [`models/dhs64`](./models/dhs64/), [`models/dhs64_mpra`](./models/dhs64_mpra/), and [`models/dhs733`](models/dhs733/) subfolders. `{model_name}_performance` subfolders contain jupyter notebooks that evaluate prediction performance.
-
-See the README.md file in the [`model`](/models/) folder for more information.
+Model training can be reproduced via the scripts included in the [`models/dhs64`](./models/dhs64/), [`models/dhs64_mpra`](./models/dhs64_mpra/), and [`models/dhs733`](models/dhs733/) subfolders. `{model_name}_performance` subfolders contain jupyter notebooks that evaluate prediction performance. See the [`README`](./models/README.md) file in the [`model`](/models/) folder for more information.
 
 ### Reproduce publication analysis
 

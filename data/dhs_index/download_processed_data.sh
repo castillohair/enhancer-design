@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # TODO: Add actual download commands
-echo 'dhs_index/processed/DHS_annotated_with_seqs_max_length_500.csv.gz'
+echo 'DHS_annotated_with_seqs_max_length_500.csv.gz'
 echo 'data_splits_chrs.json'
 echo 'data_splits_dhs_idx.h5'
 
