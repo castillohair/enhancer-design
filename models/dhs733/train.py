@@ -228,7 +228,7 @@ def train_model(
     # If continuing from a previous model and the default name is the same as the starting model,
     # add "_continued" to the output name.
     if output_name is None:
-        output_name = f"dhs64_chr_split_{chr_split_idx}"
+        output_name = f"dhs733_chr_split_{chr_split_idx}"
         if starting_model is not None and output_name==starting_model:
             output_name += "_continued"
 
