@@ -1,6 +1,6 @@
 # Model-based enhancer design code
 
-The following scripts contain code to perform various design tasks:
+The following scripts (coming soon!) contain code to perform various design tasks:
 
 - `dhs64_single_fsp.py`: Design enhancers for activity specific to one of the [DHS64-modeled biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) against all others. Uses [Fast SeqProp](https://doi.org/10.1186/s12859-021-04437-5).
 - `dhs64_single_den.py`: Train a [Deep Exploration Network](https://doi.org/10.1016/j.cels.2020.05.007) to generate enhancers with activity specific to one of the DHS64-modeled biosamples against all others.
