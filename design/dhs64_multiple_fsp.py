@@ -81,6 +81,7 @@ def run(
         n_seqs,
         output_dir='.',
         output_prefix=None,
+        seed=None,
     ):
 
     if not os.path.exists(output_dir):
@@ -138,7 +139,7 @@ def run(
             'entropy_weight': 1e-3,
             'learning_rate': 0.001,
             'n_iter_max': 2500,
-            'init_seed': 0,
+            'init_seed': seed,
         },
         'target_loss_params': {
             'targets_idx': targets_idx,
@@ -272,7 +273,7 @@ def run(
     palette = {b:'lightgrey' for b in biosamples}
     for biosample in targets:
         palette[biosample] = 'tab:red'
-    fig, ax = pyplot.subplots(figsize=(9, 3.5))
+    fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -289,7 +290,7 @@ def run(
     ax.tick_params(axis='x', rotation=90, labelsize=8)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
-        if biosamples[label_idx]==biosample:
+        if biosamples[label_idx] in targets:
             label.set_fontweight('bold')
     ax.set_xlabel('Biosample')
     ax.set_ylabel('$log_{10}$ accessibility prediction\nDesign model')
@@ -304,7 +305,7 @@ def run(
     palette = {b:'lightgrey' for b in biosamples}
     for biosample in targets:
         palette[biosample] = 'tab:red'
-    fig, ax = pyplot.subplots(figsize=(9, 3.5))
+    fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -321,7 +322,7 @@ def run(
     ax.tick_params(axis='x', rotation=90, labelsize=8)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
-        if biosamples[label_idx]==biosample:
+        if biosamples[label_idx] in targets:
             label.set_fontweight('bold')
     ax.set_xlabel('Biosample')
     ax.set_ylabel('$log_{10}$ accessibility prediction\nValidation model')
@@ -341,6 +342,7 @@ if __name__ == '__main__':
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
+    parser.add_argument('--seed', type=int, default=None, help='Random seed for sequence initialization. If None, a random seed will be used.')
     args = parser.parse_args()
 
     # Process biosample indices
@@ -355,4 +357,5 @@ if __name__ == '__main__':
         n_seqs=args.n_seqs,
         output_dir=args.output_dir,
         output_prefix=args.output_prefix,
+        seed=args.seed,
     )
