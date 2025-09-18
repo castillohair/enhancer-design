@@ -373,7 +373,7 @@ def run(
         hue='biosample',
         legend=False,
         palette=palette,
-        fliersize=1,
+        fliersize=3,
         width=0.8,
         ax=ax,
     )
