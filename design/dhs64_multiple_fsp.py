@@ -29,18 +29,43 @@ BIOSAMPLE_META_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_BIOSAMPLE_MET
 DESIGN_MODEL_PATHS = [os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[i]) for i in [1, 3]]
 VAL_MODEL_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[0])
 
-def get_target_avg_loss_func(
-        target_idx,
+def get_target_min_plus_avg_loss_func(
+        targets_idx,
+        n_model_outputs,
         target_weight,
         non_target_weight,
     ):
 
+    nontargets_idx = [i for i in range(n_model_outputs) if i not in targets_idx]
+    targets_idx = tensorflow.cast(targets_idx, tensorflow.int32)
+    nontargets_idx = tensorflow.cast(nontargets_idx, tensorflow.int32)
+
     def target_loss_func(model_preds):
         # model_preds has dimensions (n_seqs, n_outputs)
-        target_score = - tensorflow.reduce_mean(model_preds[:, target_idx])
-        non_target_score = tensorflow.reduce_mean(model_preds)
+        model_preds_target = tensorflow.gather(
+            model_preds,
+            targets_idx,
+            axis=1,
+        )
+        model_preds_nontarget = tensorflow.gather(
+            model_preds,
+            nontargets_idx,
+            axis=1,
+        )
+        
+        # Combination of min and average
+        target_score_min = - tensorflow.reduce_mean(
+            tensorflow.reduce_min(model_preds_target, axis=1)
+        )
+        target_score_avg = - tensorflow.reduce_mean(
+            tensorflow.reduce_mean(model_preds_target, axis=1)
+        )
+        target_score = target_score_min + 0.2*target_score_avg
+
+        non_target_score = tensorflow.reduce_mean(model_preds_nontarget)
+
         return non_target_weight*non_target_score + target_weight*target_score
-    
+        
     return target_loss_func
 
 def get_repeat_loss_func():
@@ -51,7 +76,7 @@ def get_repeat_loss_func():
     return repeat_loss_func
 
 def run(
-        biosample_idx,
+        targets_idx,
         seq_length,
         n_seqs,
         output_dir='.',
@@ -66,14 +91,17 @@ def run(
     biosamples = biosample_metadata_df['Biosample name'].tolist()
 
     # Extract and sanitize biosample name
-    biosample = biosamples[biosample_idx]
-    biosample_sanitized = src.utils.sanitize_str(biosample)
+    targets = [biosamples[i] for i in targets_idx]
+    targets_sanitized = [src.utils.sanitize_str(b) for b in targets]
 
     # Prefix for output files
     if output_prefix is None:
-        output_prefix = f"{biosample_idx}_{biosample_sanitized}"
+        output_prefix = '_'.join([f"{i}_{n}" for i, n in zip(targets_idx, targets_sanitized)])
 
-    print(f"\nStarting sequence design for biosample {biosample} ({biosample_idx + 1} / {len(biosamples)})...")
+    print(
+        f"\nStarting sequence design for targets "
+        f"{', '.join([f'{n} ({i} / {len(biosamples)})' for i, n in zip(targets_idx, targets)])}..."
+    )
 
     # Construct model for design
     # ==========================
@@ -84,9 +112,9 @@ def run(
     # Select first output head: continous accessibility prediction
     models_design_list = [src.model.select_output_head(m, 0) for m in models_design_list]
 
-    # Pessimistic ensemble: minimum across target biosample, maximum across non-target biosamples
-    min_output_idx = [biosample_idx]
-    max_output_idx = [i for i in range(len(biosamples)) if i != biosample_idx]
+    # Pessimistic ensemble: minimum across target biosamples, maximum across non-target biosamples
+    min_output_idx = targets_idx
+    max_output_idx = [i for i in range(len(biosamples)) if i not in targets_idx]
     model_design = src.model.make_model_ensemble(
         models_design_list,
         min_output_idx=min_output_idx,
@@ -101,7 +129,7 @@ def run(
     # Run parameters
     run_parameters = {
         'run_id': datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f"),
-        'target_idx': biosample_idx,
+        'targets_idx': targets_idx,
         'fsp_params': {
             'seq_length': seq_length,
             'n_seqs': n_seqs,
@@ -113,7 +141,8 @@ def run(
             'init_seed': 0,
         },
         'target_loss_params': {
-            'target_idx': biosample_idx,
+            'targets_idx': targets_idx,
+            'n_model_outputs': len(biosamples),
             'target_weight': 1,
             'non_target_weight': 1,
         },
@@ -125,7 +154,7 @@ def run(
         file.write(json.dumps(run_parameters, indent=4))
 
     # Get loss functions
-    target_loss_func = get_target_avg_loss_func(
+    target_loss_func = get_target_min_plus_avg_loss_func(
         **run_parameters['target_loss_params'],
     )
     pwm_loss_func = get_repeat_loss_func(**run_parameters['pwm_loss_params'])
@@ -241,7 +270,8 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[biosample] = 'tab:red'
+    for biosample in targets:
+        palette[biosample] = 'tab:red'
     fig, ax = pyplot.subplots(figsize=(9, 3.5))
     seaborn.boxplot(
         data=df_to_plot,
@@ -272,7 +302,8 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[biosample] = 'tab:red'
+    for biosample in targets:
+        palette[biosample] = 'tab:red'
     fig, ax = pyplot.subplots(figsize=(9, 3.5))
     seaborn.boxplot(
         data=df_to_plot,
@@ -296,22 +327,30 @@ def run(
     ax.set_ylabel('$log_{10}$ accessibility prediction\nValidation model')
     fig.savefig(os.path.join(output_dir, f"{output_prefix}_preds_val_boxplot.png"))
     pyplot.close(fig)
-
-    print(f"\nDone with biosample {biosample} ({biosample_idx + 1} / {len(biosamples)}).")
+    print(
+        f"\nDone with targets "
+        f"{', '.join([f'{n} ({i} / {len(biosamples)})' for i, n in zip(targets_idx, targets)])}..."
+    )
 
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.')
-    parser.add_argument('--biosample-idx', type=int, help='Biosample index within all modeled biosamples (0-63).')
+    parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with activity spcecific to multiple biosamples using DHS64.')
+    parser.add_argument('--biosamples-idx', type=str, help='Indices of biosamples to maximize among all modeled biosamples (0-63), as a comma-separated list.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
     args = parser.parse_args()
 
+    # Process biosample indices
+    try:
+        biosamples_idx = [int(idx) for idx in args.biosamples_idx.split(',')]
+    except Exception as e:
+        raise ValueError("Error parsing --biosamples-idx argument. Please provide a comma-separated list of integers.")
+
     run(
-        biosample_idx=args.biosample_idx,
+        targets_idx=biosamples_idx,
         seq_length=args.seq_length,
         n_seqs=args.n_seqs,
         output_dir=args.output_dir,
