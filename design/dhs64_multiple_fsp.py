@@ -29,12 +29,38 @@ BIOSAMPLE_META_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_BIOSAMPLE_MET
 DESIGN_MODEL_PATHS = [os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[i]) for i in [1, 3]]
 VAL_MODEL_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[0])
 
+##################
+# Loss functions #
+##################
 def get_target_min_plus_avg_loss_func(
         targets_idx,
         n_model_outputs,
         target_weight,
         non_target_weight,
     ):
+    """
+    Get a target loss function to provide to Fast SeqProp.
+    
+    The returned function maximizes a weighted sum of the minimum and the average target
+    biosample predictions, and minimizes the average non-target biosample predictions.
+
+    Parameters
+    ----------
+    targets_idx : int
+        List of indices of biosamples to maximize.
+    n_model_outputs : int
+        Total number of model outputs (biosamples).
+    target_weight : float
+        Weight for the target biosample score in the loss.
+    non_target_weight : float
+        Weight for the non-target biosample score in the loss.
+
+    Returns
+    -------
+    function
+        Loss function.
+
+    """
 
     nontargets_idx = [i for i in range(n_model_outputs) if i not in targets_idx]
     targets_idx = tensorflow.cast(targets_idx, tensorflow.int32)
@@ -69,12 +95,26 @@ def get_target_min_plus_avg_loss_func(
     return target_loss_func
 
 def get_repeat_loss_func():
+    """
+    Get a PWM loss function to provide to Fast SeqProp.
+
+    The returned function penalizes repeated nucleotides in the PWM.
+
+    Returns
+    -------
+    function
+        Loss function.
+
+    """
     def repeat_loss_func(pwm):
         # PWM has dimensions (n_seqs, seq_length, n_channels)
         return tensorflow.reduce_mean(pwm[:, :-1, :] * pwm[:, 1:, :])
     
     return repeat_loss_func
 
+#################################
+# Main sequence design function #
+#################################
 def run(
         targets_idx,
         seq_length,
@@ -83,6 +123,25 @@ def run(
         output_prefix=None,
         seed=None,
     ):
+    """
+    Run Fast SeqProp to generate sequences with activity specific to multiple biosamples using DHS64 model.
+    
+    Parameters
+    ----------
+    targets_idx : list of int
+        List of indices of biosamples to maximize among all DHS64-modeled biosamples.
+    seq_length : int
+        Length of sequences to generate.
+    n_seqs : int
+        Number of sequences to generate.
+    output_dir : str, optional
+        Directory to save output files. Default is current directory.
+    output_prefix : str, optional
+        Prefix for output files. If None, a prefix based on target indices and names will be used.
+    seed : int, optional
+        Random seed for sequence initialization. If None, a random seed will be used.
+
+    """
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -333,15 +392,17 @@ def run(
         f"{', '.join([f'{n} ({i} / {len(biosamples)})' for i, n in zip(targets_idx, targets)])}..."
     )
 
-
+###############
+# Entry point #
+###############
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with activity spcecific to multiple biosamples using DHS64.')
-    parser.add_argument('--biosamples-idx', type=str, help='Indices of biosamples to maximize among all modeled biosamples (0-63), as a comma-separated list.')
+    parser.add_argument('--biosamples-idx', type=str, help='Indices of biosamples to maximize among all DHS64-modeled biosamples, as a comma-separated list.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
-    parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
+    parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on target biosample indices and names will be used.')
     parser.add_argument('--seed', type=int, default=None, help='Random seed for sequence initialization. If None, a random seed will be used.')
     args = parser.parse_args()
 
@@ -351,6 +412,7 @@ if __name__ == '__main__':
     except Exception as e:
         raise ValueError("Error parsing --biosamples-idx argument. Please provide a comma-separated list of integers.")
 
+    # Run design
     run(
         targets_idx=biosamples_idx,
         seq_length=args.seq_length,

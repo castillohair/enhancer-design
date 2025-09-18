@@ -29,11 +29,35 @@ BIOSAMPLE_META_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_BIOSAMPLE_MET
 DESIGN_MODEL_PATHS = [os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[i]) for i in [1, 3]]
 VAL_MODEL_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[0])
 
+##################
+# Loss functions #
+##################
 def get_target_avg_loss_func(
         target_idx,
         target_weight,
         non_target_weight,
     ):
+    """
+    Get a target loss function to provide to Fast SeqProp.
+    
+    The returned function maximizes the predicted difference between target biosample
+    and the average of all biosamples.
+
+    Parameters
+    ----------
+    target_idx : int
+        Index of the target biosample to maximize.
+    target_weight : float
+        Weight for the target biosample score in the loss.
+    non_target_weight : float
+        Weight for the non-target biosample score in the loss.
+
+    Returns
+    -------
+    function
+        Loss function.
+
+    """
 
     def target_loss_func(model_preds):
         # model_preds has dimensions (n_seqs, n_outputs)
@@ -44,19 +68,53 @@ def get_target_avg_loss_func(
     return target_loss_func
 
 def get_repeat_loss_func():
+    """
+    Get a PWM loss function to provide to Fast SeqProp.
+
+    The returned function penalizes repeated nucleotides in the PWM.
+
+    Returns
+    -------
+    function
+        Loss function.
+
+    """
     def repeat_loss_func(pwm):
         # PWM has dimensions (n_seqs, seq_length, n_channels)
         return tensorflow.reduce_mean(pwm[:, :-1, :] * pwm[:, 1:, :])
     
     return repeat_loss_func
 
+#################################
+# Main sequence design function #
+#################################
 def run(
         biosample_idx,
         seq_length,
         n_seqs,
         output_dir='.',
         output_prefix=None,
+        seed=None,
     ):
+    """
+    Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.
+
+    Parameters
+    ----------
+    biosample_idx : int
+        Index of the biosample to target within all DHS64-modeled biosamples.
+    seq_length : int
+        Length of sequences to generate.
+    n_seqs : int
+        Number of sequences to generate.
+    output_dir : str, optional
+        Directory to save output files. Default is current directory.
+    output_prefix : str, optional
+        Prefix for output files. If None, a prefix based on biosample index and name will be used.
+    seed : int, optional
+        Random seed for sequence initialization. If None, a random seed will be used.
+
+    """
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -73,7 +131,7 @@ def run(
     if output_prefix is None:
         output_prefix = f"{biosample_idx}_{biosample_sanitized}"
 
-    print(f"\nStarting sequence design for biosample {biosample} ({biosample_idx + 1} / {len(biosamples)})...")
+    print(f"\nStarting sequence design for biosample {biosample} ({biosample_idx} / {len(biosamples)})...")
 
     # Construct model for design
     # ==========================
@@ -110,7 +168,7 @@ def run(
             'entropy_weight': 1e-3,
             'learning_rate': 0.001,
             'n_iter_max': 2500,
-            'init_seed': 0,
+            'init_seed': seed,
         },
         'target_loss_params': {
             'target_idx': biosample_idx,
@@ -242,7 +300,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     palette[biosample] = 'tab:red'
-    fig, ax = pyplot.subplots(figsize=(9, 3.5))
+    fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -273,7 +331,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     palette[biosample] = 'tab:red'
-    fig, ax = pyplot.subplots(figsize=(9, 3.5))
+    fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -297,17 +355,20 @@ def run(
     fig.savefig(os.path.join(output_dir, f"{output_prefix}_preds_val_boxplot.png"))
     pyplot.close(fig)
 
-    print(f"\nDone with biosample {biosample} ({biosample_idx + 1} / {len(biosamples)}).")
+    print(f"\nDone with biosample {biosample} ({biosample_idx} / {len(biosamples)}).")
 
-
+###############
+# Entry point #
+###############
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.')
-    parser.add_argument('--biosample-idx', type=int, help='Biosample index within all modeled biosamples (0-63).')
+    parser.add_argument('--biosample-idx', type=int, help='Biosample index within all DHS64-modeled biosamples.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
+    parser.add_argument('--seed', type=int, default=None, help='Random seed for sequence initialization. If None, a random seed will be used.')
     args = parser.parse_args()
 
     run(
@@ -316,4 +377,5 @@ if __name__ == '__main__':
         n_seqs=args.n_seqs,
         output_dir=args.output_dir,
         output_prefix=args.output_prefix,
+        seed=args.seed,
     )
