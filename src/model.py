@@ -3,7 +3,16 @@ import tensorflow
 from tensorflow.keras import layers
 from tensorflow.keras import models
 
-def resblock(x, filters, kernel_size, dilation_rate=1, first_conv_activation='relu'):
+from . import definitions
+
+
+def resblock(
+        x,
+        filters,
+        kernel_size,
+        dilation_rate=1,
+        first_conv_activation='relu',
+    ):
     """
     Constructs a residual block with two convolutional layers and a skip connection.
 
@@ -91,7 +100,7 @@ def resgroup(
 
     return x
 
-def make_model(
+def make_resnet(
         input_seq_length,
         groups=4,
         blocks_per_group=3,
@@ -219,7 +228,6 @@ def make_model(
     for act in output_activations:
         output_layer = layers.Dense(
             n_outputs,
-            name=f'dense_output_{act}',
             activation=act,
         )
         model_outputs.append(output_layer(x))
@@ -236,52 +244,198 @@ def make_model(
 
     return model
 
-def load_model(model_path, output_transformation_fpath=None):
+def load_model(model_path):
     """
     Load a pre-trained model from the specified path.
-
-    If output_transformation_fpath is provided, it will be used to apply a linear
-    transformation to the model outputs. Note that this assumes the model has a single output.
-
+    
     Parameters
     ----------
     model_path : str
         Path to the saved Keras model.
-    output_transformation_fpath : str, optional
-        Path to a .npy file containing the output transformation matrix.
+        
+    Returns
+    -------
+    tensorflow.keras.Model
+        Loaded Keras model.
+        
+    """
+    model = tensorflow.keras.models.load_model(model_path)
+    return model
+
+def select_output_head(model, output_head_idx):
+    """
+    Select a specific output head from a multi-output Keras model.
+
+    Parameters
+    ----------
+    model : tensorflow.keras.Model
+        Keras model with multiple output heads.
+    output_head_idx : int
+        Index of the output head to select.
 
     Returns
     -------
     tensorflow.keras.Model
-        Loaded Keras model, possibly with transformed outputs.
+        New Keras model with the selected output head.
 
     """
-    # Load the model from the specified path
-    model = tensorflow.keras.models.load_model(model_path)
 
-    if output_transformation_fpath is None:
-        # If no output transformation file is provided, return the model as is
-        return model
+    # create dummy input layer
+    model_input = layers.Input(shape=(None, 4))
 
-    else:
+    # Get the specified model output
+    model_output = model(model_input)[output_head_idx]
+
+    # Create a new model with the selected output
+    model_to_return = models.Model(
+        model_input,
+        model_output,
+    )
     
-        # create dummy input layer
+    return model_to_return
+
+def apply_output_transformation(model, output_transmat_filepath):
+    """
+    Apply an output transformation matrix to a Keras model's outputs.
+
+    Parameters
+    ----------
+    model : tensorflow.keras.Model
+        Keras model whose outputs will be transformed.
+    output_transmat_filepath : str
+        Path to a .npy file containing the output transformation matrix.
+    
+    Returns
+    -------
+    tensorflow.keras.Model
+        New Keras model with transformed outputs.
+
+    """
+
+    # create dummy input layer
+    model_input = layers.Input(shape=(None, 4))
+
+    # Get original model output
+    model_output = model(model_input)
+
+    # Load the output transformation matrix
+    output_transformation_mat = numpy.load(output_transmat_filepath)
+
+    # Create a tf layer where the input is multiplied by a constant matrix
+    output_transformation_layer = layers.Lambda(lambda x: tensorflow.matmul(x, output_transformation_mat))
+    model_output = output_transformation_layer(model_output)
+
+    # Create a new model with the transformed output
+    model_to_return = models.Model(
+        model_input,
+        model_output,
+    )
+    
+    return model_to_return
+
+def make_model_ensemble(
+        models_list,
+        max_output_idx=None,
+        min_output_idx=None,
+        avg_output_idx=None,
+        padded_input_length=None,
+    ):
+    """
+    Create an ensemble model from a list of Keras models.
+
+    The default behavior is to average the outputs of the models. Any output indices
+    that are not specified for max or min will be averaged.
+
+    Optionally, change the length of the input sequence by padding with zeros.
+
+    Parameters
+    ----------
+    models_list : list of tensorflow.keras.Model or list of str
+        List of Keras models or paths to saved Keras models to include in the ensemble.
+    max_output_idx : int, optional
+        Index of the output to take the maximum across models. Default is None.
+    min_output_idx : int, optional
+        Index of the output to take the minimum across models. Default is None.
+    avg_output_idx : int, optional
+        Index of the output to take the average across models. Default is None.
+    input_seq_length : int, optional
+        Length of the input sequence. If specified, input sequences will be padded
+        with zeros to this length. Default is None, which uses the models' original
+        input length.
+
+    Returns
+    -------
+    tensorflow.keras.Model
+        Ensemble Keras model.
+
+    Raises
+    ------
+    ValueError
+        If any of the specified output indices are out of range for the models' outputs.
+        If the models have different output shapes.
+
+    """
+    
+    # If models is a list of file paths, load each model
+    if type(models_list[0]) is str:
+        model_list = [load_model(m) for m in models_list]
+
+    # Check that all models have the same output shape
+    output_shapes = [m.output_shape for m in models_list]
+    if len(set(output_shapes)) != 1:
+        raise ValueError("All models must have the same output shape.")
+    n_outputs = output_shapes[0][-1]
+
+    # Figure out defaults for max, min, avg output indices
+    if avg_output_idx is None:
+        avg_output_idx = list(range(n_outputs))
+    if max_output_idx is None:
+        max_output_idx = []
+    else:
+        avg_output_idx = [i for i in avg_output_idx if i not in max_output_idx]
+    if min_output_idx is None:
+        min_output_idx = []
+    else:
+        avg_output_idx = [i for i in avg_output_idx if i not in min_output_idx]
+
+    # Construct padded input if necessary
+    if padded_input_length is None:
         model_input = layers.Input(shape=(None, 4))
-
-        # Get model output
-        model_output = model(model_input)
-
-        # Load model output mapping matrix
-        output_transformation_mat = numpy.load(output_transformation_fpath)
-
-        # Create a tf layer where the input is multiplied by a constant matrix
-        output_transformation_layer = layers.Lambda(lambda x: tensorflow.matmul(x, output_transformation_mat), name='output_transformation_layer')
-        model_transformed_output = output_transformation_layer(model_output)
-
-        # Create a new model with the transformed output
-        model_transformed = models.Model(
-            model_input,
-            model_transformed_output,
+    else:
+        input_padding_layer = layers.Lambda(
+            lambda x: tensorflow.pad(
+                x,
+                [[0, 0], [0, definitions.MODEL_INPUT_LENGTH - padded_input_length], [0, 0]],
+                "CONSTANT",
+                constant_values=0,
+            ),
         )
-        
-        return model_transformed
+
+        model_input = layers.Input(shape=(padded_input_length, 4))
+
+    # Outputs of individual models
+    models_individual_output = [m(input_padding_layer(model_input)) for m in models_list]
+    
+    # Select outputs
+    mask_min = numpy.zeros((1, n_outputs))
+    mask_min[:, min_output_idx] = 1
+    mask_min = tensorflow.cast(mask_min, tensorflow.float32)
+    mask_max = numpy.zeros((1, n_outputs))
+    mask_max[:, max_output_idx] = 1
+    mask_max = tensorflow.cast(mask_max, tensorflow.float32)
+    mask_avg = numpy.zeros((1, n_outputs))
+    mask_avg[:, avg_output_idx] = 1
+    mask_avg = tensorflow.cast(mask_avg, tensorflow.float32)
+    select_output_layer = layers.Lambda(
+        lambda x: tensorflow.reduce_min(tensorflow.stack(x, axis=-1), axis=-1)*mask_min + \
+            tensorflow.reduce_max(tensorflow.stack(x, axis=-1), axis=-1)*mask_max + \
+            tensorflow.reduce_mean(tensorflow.stack(x, axis=-1), axis=-1)*mask_avg,
+    )
+    model_ensemble_output = select_output_layer(models_individual_output)
+
+    model_ensemble = models.Model(
+        model_input,
+        model_ensemble_output,
+    )
+
+    return model_ensemble

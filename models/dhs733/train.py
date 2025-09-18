@@ -11,13 +11,13 @@ import tensorflow
 
 BASE_DIR = '../../'
 sys.path.append(BASE_DIR)
-import utils.definitions
-import utils.resnet
-import utils.sequence
+import src.definitions
+import src.model
+import src.sequence
 
-DHS733_TRAIN_ONEHOT_SEQS_PATH = os.path.join(BASE_DIR, utils.definitions.DHS733_TRAIN_ONEHOT_SEQS_PATH)
-DHS733_TRAIN_LOGSIGNAL_PATH = os.path.join(BASE_DIR, utils.definitions.DHS733_TRAIN_LOGSIGNAL_PATH)
-DATA_SPLITS_DHS_IDX_PATH = os.path.join(BASE_DIR, utils.definitions.DATA_SPLITS_DHS_IDX_PATH)
+DHS733_TRAIN_ONEHOT_SEQS_PATH = os.path.join(BASE_DIR, src.definitions.DHS733_TRAIN_ONEHOT_SEQS_PATH)
+DHS733_TRAIN_LOGSIGNAL_PATH = os.path.join(BASE_DIR, src.definitions.DHS733_TRAIN_LOGSIGNAL_PATH)
+DATA_SPLITS_DHS_IDX_PATH = os.path.join(BASE_DIR, src.definitions.DATA_SPLITS_DHS_IDX_PATH)
 
 # Learning rate scheduler hyperparameters
 lrs = [2e-4, 2e-5, 2e-6]
@@ -60,8 +60,8 @@ class SeqGenerator(tensorflow.keras.utils.Sequence):
         self.randomize_rc = randomize_rc
         self.shuffle = shuffle
 
-        self.seq_oenehot_placeholder = numpy.zeros((batch_size, utils.definitions.MODEL_MAX_SEQ_LEN, 4))
-        self.signal_placeholder = numpy.zeros((batch_size, utils.definitions.DHS_INDEX_N_BIOSAMPLES))
+        self.seq_oenehot_placeholder = numpy.zeros((batch_size, src.definitions.DHS733_INPUT_LENGTH, 4))
+        self.signal_placeholder = numpy.zeros((batch_size, src.definitions.DHS733_N_BIOSAMPLES))
         
         self.on_epoch_end()
 
@@ -253,17 +253,17 @@ def train_model(
     
     # Make model
     if starting_model is not None:
-        model = utils.resnet.load_model(f'{starting_model}.h5')
+        model = src.model.load_model(f'{starting_model}.h5')
     else:
-        model = utils.resnet.make_model(
-            utils.definitions.MODEL_MAX_SEQ_LEN,
+        model = src.model.make_resnet(
+            src.definitions.DHS733_INPUT_LENGTH,
             groups=4,
             blocks_per_group=3,
             filters=480,
             kernel_size=13,
             dilation_rates=[1, 2, 4, 8],
             first_conv_activation='relu',
-            n_outputs=utils.definitions.DHS_INDEX_N_BIOSAMPLES,
+            n_outputs=src.definitions.DHS733_N_BIOSAMPLES,
             output_activation='linear',
         )
     

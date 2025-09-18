@@ -15,7 +15,7 @@ import Bio.Seq
 BASE_DIR = '../../'
 sys.path.append(BASE_DIR)
 import utils.definitions
-import utils.resnet
+import utils.model
 import utils.sequence
 
 DHS64_TRAIN_DATA_PATH = os.path.join(BASE_DIR, utils.definitions.DHS64_TRAIN_DATA_PATH)
@@ -201,10 +201,10 @@ def train_model(
     
     # Make model
     if starting_model is not None:
-        model = utils.resnet.load_model(f'{starting_model}.h5')
+        model = utils.model.load_model(f'{starting_model}.h5')
     else:
-        model = utils.resnet.make_model(
-            utils.definitions.MODEL_MAX_SEQ_LEN,
+        model = utils.model.make_resnet(
+            utils.definitions.DHS64_INPUT_LENGTH,
             groups=4,
             blocks_per_group=3,
             filters=256,
@@ -223,12 +223,12 @@ def train_model(
     generator_train = SeqGenerator(
         dhs_df_train,
         batch_size=batch_size,
-        max_seq_len=utils.definitions.MODEL_MAX_SEQ_LEN,
+        max_seq_len=utils.definitions.DHS64_INPUT_LENGTH,
     )
     generator_val = SeqGenerator(
         dhs_df_val,
         batch_size=batch_size,
-        max_seq_len=utils.definitions.MODEL_MAX_SEQ_LEN,
+        max_seq_len=utils.definitions.DHS64_INPUT_LENGTH,
     )
 
     # Use Adam optimizer
