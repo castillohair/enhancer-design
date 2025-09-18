@@ -114,7 +114,7 @@ def run(
             'pwm_weight': 3,
             'entropy_weight': 1e-3,
             'learning_rate': 0.001,
-            'n_iter_max': 10,
+            'n_iter_max': 2500,
             'init_seed': 0,
         },
         'target_loss_params': {
