@@ -1,3 +1,21 @@
+"""
+Generate DNA sequences with chromatin accessibility specific to a target biosample, using
+the DHS64 model and Fast SeqProp as the optimization method.
+
+Script sections:
+1. Loss functions: Specify sequence features to optimize. We define a target loss function
+   that maximizes target biosample accessibility and minimizes average accessibilities
+   across biosamples. Additionally, we define a PWM loss function that penalizes repeated
+   nucleotides.
+2. Main sequence design function: Loads models and metadata, runs Fast SeqProp to generate
+   sequences, calculates predictions, saves results, and generates plots. Note that we use
+   a pessimistic ensemble of models for design, taking the minimum prediction across the
+   target biosample and the maximum prediction across non-target biosamples. We additionally
+   generate predictions from a separate validation model.
+3. Entry point: Parses command-line arguments and runs the main design function.
+
+"""
+
 import argparse
 import datetime
 import json
@@ -89,7 +107,7 @@ def get_repeat_loss_func():
 # Main sequence design function #
 #################################
 def run(
-        biosample_idx,
+        target_idx,
         seq_length,
         n_seqs,
         output_dir='.',
@@ -101,7 +119,7 @@ def run(
 
     Parameters
     ----------
-    biosample_idx : int
+    target_idx : int
         Index of the biosample to target within all DHS64-modeled biosamples.
     seq_length : int
         Length of sequences to generate.
@@ -124,14 +142,14 @@ def run(
     biosamples = biosample_metadata_df['Biosample name'].tolist()
 
     # Extract and sanitize biosample name
-    biosample = biosamples[biosample_idx]
-    biosample_sanitized = src.utils.sanitize_str(biosample)
+    target = biosamples[target_idx]
+    target_sanitized = src.utils.sanitize_str(target)
 
     # Prefix for output files
     if output_prefix is None:
-        output_prefix = f"{biosample_idx}_{biosample_sanitized}"
+        output_prefix = f"{target_idx}_{target_sanitized}"
 
-    print(f"\nStarting sequence design for biosample {biosample} ({biosample_idx} / {len(biosamples)})...")
+    print(f"\nStarting sequence design for biosample {target} ({target_idx} / {len(biosamples)})...")
 
     # Construct model for design
     # ==========================
@@ -143,8 +161,8 @@ def run(
     models_design_list = [src.model.select_output_head(m, 0) for m in models_design_list]
 
     # Pessimistic ensemble: minimum across target biosample, maximum across non-target biosamples
-    min_output_idx = [biosample_idx]
-    max_output_idx = [i for i in range(len(biosamples)) if i != biosample_idx]
+    min_output_idx = [target_idx]
+    max_output_idx = [i for i in range(len(biosamples)) if i != target_idx]
     model_design = src.model.make_model_ensemble(
         models_design_list,
         min_output_idx=min_output_idx,
@@ -159,7 +177,7 @@ def run(
     # Run parameters
     run_parameters = {
         'run_id': datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f"),
-        'target_idx': biosample_idx,
+        'target_idx': target_idx,
         'fsp_params': {
             'seq_length': seq_length,
             'n_seqs': n_seqs,
@@ -171,7 +189,7 @@ def run(
             'init_seed': seed,
         },
         'target_loss_params': {
-            'target_idx': biosample_idx,
+            'target_idx': target_idx,
             'target_weight': 1,
             'non_target_weight': 1,
         },
@@ -299,7 +317,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[biosample] = 'tab:red'
+    palette[target] = 'tab:red'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
@@ -317,7 +335,7 @@ def run(
     ax.tick_params(axis='x', rotation=90, labelsize=8)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
-        if biosamples[label_idx]==biosample:
+        if biosamples[label_idx]==target:
             label.set_fontweight('bold')
     ax.set_xlabel('Biosample')
     ax.set_ylabel('$log_{10}$ accessibility prediction\nDesign model')
@@ -330,7 +348,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[biosample] = 'tab:red'
+    palette[target] = 'tab:red'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
@@ -348,14 +366,14 @@ def run(
     ax.tick_params(axis='x', rotation=90, labelsize=8)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
-        if biosamples[label_idx]==biosample:
+        if biosamples[label_idx]==target:
             label.set_fontweight('bold')
     ax.set_xlabel('Biosample')
     ax.set_ylabel('$log_{10}$ accessibility prediction\nValidation model')
     fig.savefig(os.path.join(output_dir, f"{output_prefix}_preds_val_boxplot.png"))
     pyplot.close(fig)
 
-    print(f"\nDone with biosample {biosample} ({biosample_idx} / {len(biosamples)}).")
+    print(f"\nDone with biosample {target} ({target_idx} / {len(biosamples)}).")
 
 ###############
 # Entry point #
@@ -363,7 +381,7 @@ def run(
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.')
-    parser.add_argument('--biosample-idx', type=int, help='Biosample index within all DHS64-modeled biosamples.')
+    parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
@@ -372,7 +390,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     run(
-        biosample_idx=args.biosample_idx,
+        target_idx=args.target_idx,
         seq_length=args.seq_length,
         n_seqs=args.n_seqs,
         output_dir=args.output_dir,
