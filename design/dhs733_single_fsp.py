@@ -1,14 +1,15 @@
 """
 Generate DNA sequences with chromatin accessibility specific to a target biosample, using
-the DHS64 model and Fast SeqProp as the optimization method.
+the DH733 model and Fast SeqProp as the optimization method.
 
 Script sections:
 1. Imports and constants: Import necessary libraries and define paths to model files and
    metadata.
 2. Loss functions: Specify sequence features to optimize. We define a target loss function
-   that maximizes target biosample accessibility and minimizes average accessibilities
-   across biosamples. Additionally, we define a PWM loss function that penalizes repeated
-   nucleotides.
+   that maximizes target biosample accessibility and minimizes a specified percentile of
+   non-target biosample predictions. Higher non-target percentile corresponds to more
+   stringent designs but may lead to lower target activity. Additionally, we define a PWM
+   loss function that penalizes repeated nucleotides.
 3. Main sequence design function: Loads models and metadata, runs Fast SeqProp to generate
    sequences, calculates predictions, saves results, and generates plots. Note that we use
    a pessimistic ensemble of models for design, taking the minimum prediction across the
@@ -34,6 +35,7 @@ matplotlib.rcParams['savefig.dpi'] = 120
 matplotlib.rcParams['savefig.bbox'] = 'tight'
 
 import tensorflow
+import tensorflow_probability as tfp
 
 import corefsp
 
@@ -45,32 +47,39 @@ import src.sequence
 import src.plot
 import src.utils
 
-BIOSAMPLE_META_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_BIOSAMPLE_META_PATH)
-DESIGN_MODEL_PATHS = [os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[i]) for i in [1, 3]]
-VAL_MODEL_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[0])
+BIOSAMPLE_META_PATH = 'dhs733_nonredundant_biosample_metadata.tsv'
+OUTPUT_TRANSFORMATION_MATRIX_PATH = 'dhs733_nonredundant_transformation_matrix.npy'
+DESIGN_MODEL_PATHS = [os.path.join(BASE_DIR, src.definitions.DHS733_MODEL_PATH[i]) for i in [1, 3]]
+VAL_MODEL_PATH = os.path.join(BASE_DIR, src.definitions.DHS733_MODEL_PATH[0])
 
 ##################
 # Loss functions #
 ##################
-def get_target_avg_loss_func(
+def get_target_percentile_loss_func(
         target_idx,
+        n_model_outputs,
         target_weight,
         non_target_weight,
+        non_target_percentile,
     ):
     """
     Get a target loss function to provide to Fast SeqProp.
     
     The returned function maximizes the predicted difference between target biosample
-    and the average of all biosamples.
+    and a specified percentile of non-target biosample predictions.
 
     Parameters
     ----------
     target_idx : int
         Index of the target biosample to maximize.
+    n_model_outputs : int
+        Number of outputs of the model.
     target_weight : float
         Weight for the target biosample score in the loss.
     non_target_weight : float
         Weight for the non-target biosample score in the loss.
+    non_target_percentile : float
+        Percentile of non-target biosample predictions to explicitly minimize.
 
     Returns
     -------
@@ -78,11 +87,22 @@ def get_target_avg_loss_func(
         Loss function.
 
     """
+    nontarget_biosample_idx = [i for i in range(n_model_outputs) if i!=target_idx]
+    nontarget_biosample_idx = tensorflow.cast(nontarget_biosample_idx, tensorflow.int32)
 
     def target_loss_func(model_preds):
         # model_preds has dimensions (n_seqs, n_outputs)
-        target_score = - tensorflow.reduce_mean(model_preds[:, target_idx])
-        non_target_score = tensorflow.reduce_mean(model_preds)
+        model_preds_target = model_preds[:, target_idx]
+        model_preds_nontarget = tensorflow.gather(
+            model_preds,
+            nontarget_biosample_idx,
+            axis=1,
+        )
+        target_score = - tensorflow.reduce_mean(model_preds_target)
+        non_target_score = tensorflow.reduce_mean(
+            tfp.stats.percentile(model_preds_nontarget, non_target_percentile, interpolation='midpoint', axis=1)
+        )
+
         return non_target_weight*non_target_score + target_weight*target_score
     
     return target_loss_func
@@ -112,21 +132,26 @@ def run(
         target_idx,
         seq_length,
         n_seqs,
+        non_target_percentile=95,
         output_dir='.',
         output_prefix=None,
         seed=None,
     ):
     """
-    Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.
+    Run Fast SeqProp to generate sequences with biosample-specific activity using DHS733.
 
     Parameters
     ----------
     target_idx : int
-        Index of the biosample to target within all DHS64-modeled biosamples.
+        Index of the biosample to target within non-redundant DHS733-modeled biosamples.
     seq_length : int
         Length of sequences to generate.
     n_seqs : int
         Number of sequences to generate.
+    non_target_percentile : float, optional
+        Percentile of non-target biosample predictions to explicitly minimize. The higher
+        this value, the more stringent the specificity may be, but target activity may
+        be lower. Default is 95.
     output_dir : str, optional
         Directory to save output files. Default is current directory.
     output_prefix : str, optional
@@ -140,7 +165,7 @@ def run(
         os.makedirs(output_dir)
     
     # Load metadata of modeled biosamples
-    biosample_metadata_df = pandas.read_excel(BIOSAMPLE_META_PATH)
+    biosample_metadata_df = pandas.read_csv(BIOSAMPLE_META_PATH, sep='\t')
     biosamples = biosample_metadata_df['Biosample name'].tolist()
 
     # Extract and sanitize biosample name
@@ -159,8 +184,8 @@ def run(
 
     # Load models to be used for design
     models_design_list = [src.model.load_model(filepath) for filepath in DESIGN_MODEL_PATHS]
-    # Select first output head: continous accessibility prediction
-    models_design_list = [src.model.select_output_head(m, 0) for m in models_design_list]
+    # Transform model output
+    models_design_list = [src.model.apply_output_transformation(m, OUTPUT_TRANSFORMATION_MATRIX_PATH) for m in models_design_list]
 
     # Pessimistic ensemble: minimum across target biosample, maximum across non-target biosamples
     min_output_idx = [target_idx]
@@ -184,16 +209,21 @@ def run(
             'seq_length': seq_length,
             'n_seqs': n_seqs,
             'target_weight': 1,
-            'pwm_weight': 3,
+            'pwm_weight': 0.3,
             'entropy_weight': 1e-3,
             'learning_rate': 0.001,
-            'n_iter_max': 2500,
+            'n_iter_max': 10000,
             'init_seed': seed,
+            'early_stopping': True,
+            'early_stopping_mode': 'rel',
+            'early_stopping_min_delta': 0.001,
+            'early_stopping_min_batch': 50,
         },
         'target_loss_params': {
             'target_idx': target_idx,
             'target_weight': 1,
             'non_target_weight': 1,
+            'non_target_percentile': non_target_percentile,
         },
         'pwm_loss_params': {
         },
@@ -203,7 +233,7 @@ def run(
         file.write(json.dumps(run_parameters, indent=4))
 
     # Get loss functions
-    target_loss_func = get_target_avg_loss_func(
+    target_loss_func = get_target_percentile_loss_func(
         **run_parameters['target_loss_params'],
     )
     pwm_loss_func = get_repeat_loss_func(**run_parameters['pwm_loss_params'])
@@ -245,7 +275,7 @@ def run(
     print("Generating predictions from validation model...")
     model_val = src.model.load_model(VAL_MODEL_PATH)
     model_val = src.model.select_output_head(model_val, 0)
-    generated_onehot_padded = numpy.zeros((n_seqs, src.definitions.DHS64_INPUT_LENGTH, 4), dtype=numpy.float32)
+    generated_onehot_padded = numpy.zeros((n_seqs, src.definitions.DHS733_INPUT_LENGTH, 4), dtype=numpy.float32)
     generated_onehot_padded[:, :generated_onehot.shape[1], :] = generated_onehot
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
     
@@ -320,7 +350,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     palette[target] = 'tab:red'
-    fig, ax = pyplot.subplots(figsize=(9, 3.))
+    fig, ax = pyplot.subplots(figsize=(20, 3.5))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -334,7 +364,7 @@ def run(
         ax=ax,
     )
     ax.grid()
-    ax.tick_params(axis='x', rotation=90, labelsize=8)
+    ax.tick_params(axis='x', rotation=90, labelsize=4.5)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
@@ -351,7 +381,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     palette[target] = 'tab:red'
-    fig, ax = pyplot.subplots(figsize=(9, 3.))
+    fig, ax = pyplot.subplots(figsize=(20, 3.5))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -365,7 +395,7 @@ def run(
         ax=ax,
     )
     ax.grid()
-    ax.tick_params(axis='x', rotation=90, labelsize=8)
+    ax.tick_params(axis='x', rotation=90, labelsize=4.5)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
@@ -382,10 +412,11 @@ def run(
 ###############
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.')
-    parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.')
+    parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS733.')
+    parser.add_argument('--target-idx', type=int, help='Target biosample index within non-redundant DHS733-modeled biosamples. See "dhs733_nonredundant_biosample_metadata.tsv" for a list of possible target biosamples.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
+    parser.add_argument('--non-target-percentile', type=float, default=95, help='Percentile of non-target biosample predictions to explicitly minimize. Higher non-target percentile corresponds to more stringent designs.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
     parser.add_argument('--seed', type=int, default=None, help='Random seed for sequence initialization. If None, a random seed will be used.')
@@ -395,6 +426,7 @@ if __name__ == '__main__':
         target_idx=args.target_idx,
         seq_length=args.seq_length,
         n_seqs=args.n_seqs,
+        non_target_percentile=args.non_target_percentile,
         output_dir=args.output_dir,
         output_prefix=args.output_prefix,
         seed=args.seed,
