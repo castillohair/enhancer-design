@@ -360,8 +360,8 @@ def run(
         hue='biosample',
         legend=False,
         palette=palette,
-        fliersize=3,
-        width=0.8,
+        fliersize=2,
+        width=0.7,
         ax=ax,
     )
     ax.grid()
@@ -391,8 +391,8 @@ def run(
         hue='biosample',
         legend=False,
         palette=palette,
-        fliersize=3,
-        width=0.8,
+        fliersize=2,
+        width=0.7,
         ax=ax,
     )
     ax.grid()
