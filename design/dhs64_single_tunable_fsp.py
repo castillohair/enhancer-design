@@ -204,13 +204,13 @@ def get_pwm_loss_func(
         Loss function.
 
     """
-    def repeat_loss_func(pwm):
+    def pwm_loss_func(pwm):
         # PWM has dimensions (n_seqs, seq_length, n_channels)
         return repeat_loss_weight*repeat_loss_func(pwm) + \
             gc_loss_weight*gc_loss_func(pwm) + \
             forbidden_sites_loss_weight*forbidden_sites_loss_func(pwm)
     
-    return repeat_loss_func
+    return pwm_loss_func
 
 #################################
 # Main sequence design function #
