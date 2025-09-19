@@ -221,6 +221,7 @@ def run(
         },
         'target_loss_params': {
             'target_idx': target_idx,
+            'n_model_outputs': len(biosamples),
             'target_weight': 1,
             'non_target_weight': 1,
             'non_target_percentile': non_target_percentile,
