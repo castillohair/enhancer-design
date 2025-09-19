@@ -303,7 +303,7 @@ def run(
         },
         'target_loss_params': {
             'target_idx': target_idx,
-            'target_setpoint_vals': setpoint_vals,
+            'target_setpoint_vals': setpoint_vals.tolist() if not numpy.isscalar(setpoint_vals) else float(setpoint_vals),
             'n_model_outputs': len(biosamples),
             'target_weight': 1,
             'non_target_weight': 1,
