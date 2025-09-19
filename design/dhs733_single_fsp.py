@@ -265,7 +265,10 @@ def run(
     )
 
     # Save predictions from design model
-    generated_design_preds_df = generated_df.copy()
+    generated_design_preds_df = pandas.DataFrame(
+        index=generated_seq_ids, index_name='seq_id', columns=['seq'] + biosamples, 
+    )
+    generated_design_preds_df['seq'] = generated_seqs
     generated_design_preds_df[biosamples] = generated_pred_design
     generated_design_preds_df.to_csv(
         os.path.join(output_dir, f"{output_prefix}_preds_design.csv.gz"),
@@ -280,7 +283,10 @@ def run(
     generated_onehot_padded[:, :generated_onehot.shape[1], :] = generated_onehot
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
     
-    generated_val_preds_df = generated_df.copy()
+    generated_val_preds_df = pandas.DataFrame(
+        index=generated_seq_ids, index_name='seq_id', columns=['seq'] + biosamples, 
+    )
+    generated_val_preds_df['seq'] = generated_seqs
     generated_val_preds_df[biosamples] = generated_pred_val
     generated_val_preds_df.to_csv(
         os.path.join(output_dir, f"{output_prefix}_preds_val.csv.gz"),
@@ -365,7 +371,7 @@ def run(
         ax=ax,
     )
     ax.grid()
-    ax.tick_params(axis='x', rotation=90, labelsize=4.5)
+    ax.tick_params(axis='x', rotation=90, labelsize=5)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
@@ -396,7 +402,7 @@ def run(
         ax=ax,
     )
     ax.grid()
-    ax.tick_params(axis='x', rotation=90, labelsize=4.5)
+    ax.tick_params(axis='x', rotation=90, labelsize=5)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
