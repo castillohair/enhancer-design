@@ -360,7 +360,7 @@ def run(
         hue='biosample',
         legend=False,
         palette=palette,
-        fliersize=2,
+        fliersize=1,
         width=0.7,
         ax=ax,
     )
@@ -391,7 +391,7 @@ def run(
         hue='biosample',
         legend=False,
         palette=palette,
-        fliersize=2,
+        fliersize=1,
         width=0.7,
         ax=ax,
     )
