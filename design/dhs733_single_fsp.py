@@ -275,7 +275,7 @@ def run(
     # Generate predictions from validation model
     print("Generating predictions from validation model...")
     model_val = src.model.load_model(VAL_MODEL_PATH)
-    model_val = src.model.select_output_head(model_val, 0)
+    model_val = src.model.apply_output_transformation(model_val, OUTPUT_TRANSFORMATION_MATRIX_PATH)
     generated_onehot_padded = numpy.zeros((n_seqs, src.definitions.DHS733_INPUT_LENGTH, 4), dtype=numpy.float32)
     generated_onehot_padded[:, :generated_onehot.shape[1], :] = generated_onehot
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
@@ -350,7 +350,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[target] = 'tab:red'
+    palette[target] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(20, 3.5))
     seaborn.boxplot(
         data=df_to_plot,
@@ -381,7 +381,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[target] = 'tab:red'
+    palette[target] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(20, 3.5))
     seaborn.boxplot(
         data=df_to_plot,

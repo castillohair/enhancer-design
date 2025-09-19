@@ -319,7 +319,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[target] = 'tab:red'
+    palette[target] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
@@ -350,7 +350,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[target] = 'tab:red'
+    palette[target] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,

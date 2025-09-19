@@ -435,7 +435,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[target] = 'tab:red'
+    palette[target] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
@@ -453,7 +453,7 @@ def run(
     ax.tick_params(axis='x', rotation=90, labelsize=8)
     # Horizontal line at setpoint if single value
     if numpy.isscalar(setpoint_vals):
-        ax.axhline(setpoint_vals, color='tab:red', linestyle='--', label='Setpoint', zorder=-1)
+        ax.axhline(setpoint_vals, color='tab:blue', linestyle='--', label='Setpoint', zorder=-1)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
@@ -487,7 +487,7 @@ def run(
         value_name='prediction',
     )
     palette = {b:'lightgrey' for b in biosamples}
-    palette[target] = 'tab:red'
+    palette[target] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
@@ -505,7 +505,7 @@ def run(
     ax.tick_params(axis='x', rotation=90, labelsize=8)
     # Horizontal line at setpoint if single value
     if numpy.isscalar(setpoint_vals):
-        ax.axhline(setpoint_vals, color='tab:red', linestyle='--', label='Setpoint', zorder=-1)
+        ax.axhline(setpoint_vals, color='tab:blue', linestyle='--', label='Setpoint', zorder=-1)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:

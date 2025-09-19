@@ -351,7 +351,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     for biosample in targets:
-        palette[biosample] = 'tab:red'
+        palette[biosample] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
@@ -383,7 +383,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     for biosample in targets:
-        palette[biosample] = 'tab:red'
+        palette[biosample] = 'tab:blue'
     fig, ax = pyplot.subplots(figsize=(9, 3.))
     seaborn.boxplot(
         data=df_to_plot,
