@@ -31,7 +31,7 @@ from matplotlib import pyplot
 import pandas
 import seaborn
 
-matplotlib.rcParams['savefig.dpi'] = 120
+matplotlib.rcParams['savefig.dpi'] = 150
 matplotlib.rcParams['savefig.bbox'] = 'tight'
 
 import tensorflow
@@ -359,7 +359,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     palette[target] = 'tab:blue'
-    fig, ax = pyplot.subplots(figsize=(20, 3.5))
+    fig, ax = pyplot.subplots(figsize=(25, 4))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -373,7 +373,7 @@ def run(
         ax=ax,
     )
     ax.grid()
-    ax.tick_params(axis='x', rotation=90, labelsize=5)
+    ax.tick_params(axis='x', rotation=90, labelsize=5.5)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
@@ -390,7 +390,7 @@ def run(
     )
     palette = {b:'lightgrey' for b in biosamples}
     palette[target] = 'tab:blue'
-    fig, ax = pyplot.subplots(figsize=(20, 3.5))
+    fig, ax = pyplot.subplots(figsize=(25, 4))
     seaborn.boxplot(
         data=df_to_plot,
         x='biosample',
@@ -404,7 +404,7 @@ def run(
         ax=ax,
     )
     ax.grid()
-    ax.tick_params(axis='x', rotation=90, labelsize=5)
+    ax.tick_params(axis='x', rotation=90, labelsize=5.5)
     # Iterate over x axis labels and bold targets
     for label_idx, label in enumerate(ax.get_xticklabels()):
         if biosamples[label_idx]==target:
