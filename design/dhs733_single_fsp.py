@@ -266,8 +266,9 @@ def run(
 
     # Save predictions from design model
     generated_design_preds_df = pandas.DataFrame(
-        index=generated_seq_ids, index_name='seq_id', columns=['seq'] + biosamples, 
+        index=generated_seq_ids, columns=['seq'] + biosamples, 
     )
+    generated_design_preds_df.index.name = 'seq_id'
     generated_design_preds_df['seq'] = generated_seqs
     generated_design_preds_df[biosamples] = generated_pred_design
     generated_design_preds_df.to_csv(
@@ -284,8 +285,9 @@ def run(
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
     
     generated_val_preds_df = pandas.DataFrame(
-        index=generated_seq_ids, index_name='seq_id', columns=['seq'] + biosamples, 
+        index=generated_seq_ids, columns=['seq'] + biosamples, 
     )
+    generated_val_preds_df.index.name = 'seq_id'
     generated_val_preds_df['seq'] = generated_seqs
     generated_val_preds_df[biosamples] = generated_pred_val
     generated_val_preds_df.to_csv(
