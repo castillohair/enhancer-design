@@ -79,7 +79,7 @@ def plot_sequence_bitmap(seq_vals, ax=None, legend=True):
 
     return ax
 
-def plot_seq_logo(nt_height=None, pwm=None, seq=None, ax=None, title=None):
+def plot_seq_logo(nt_height=None, pwm=None, seq=None, font_name='DejaVu Sans Mono', ax=None, title=None):
     """
     Plot a sequence logo
     
@@ -93,6 +93,8 @@ def plot_seq_logo(nt_height=None, pwm=None, seq=None, ax=None, title=None):
         PWM matrix.
     seq : str or None
         Sequence string.
+    font_name : str
+        Font name for the logo text.
     ax : matplotlib.Axes or None
         Axes to plot on.
     title : str or None
@@ -135,10 +137,9 @@ def plot_seq_logo(nt_height=None, pwm=None, seq=None, ax=None, title=None):
     
     logo = logomaker.Logo(
         nt_height_df,
-        # color_scheme='classic',
         color_scheme=NT_COLOR_DICT,
         ax=ax,
-        font_name='Consolas',
+        font_name=font_name,
     )
     logo.style_spines(visible=False)
     logo.style_spines(spines=['bottom'], visible=True, linewidth=1)
