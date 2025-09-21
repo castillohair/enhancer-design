@@ -35,7 +35,7 @@ matplotlib.rcParams['savefig.dpi'] = 150
 matplotlib.rcParams['savefig.bbox'] = 'tight'
 
 import tensorflow
-import tensorflow_probability as tfp
+import tensorflow_probability
 
 import corefsp
 
@@ -100,7 +100,12 @@ def get_target_percentile_loss_func(
         )
         target_score = - tensorflow.reduce_mean(model_preds_target)
         non_target_score = tensorflow.reduce_mean(
-            tfp.stats.percentile(model_preds_nontarget, non_target_percentile, interpolation='midpoint', axis=1)
+            tensorflow_probability.stats.percentile(
+                model_preds_nontarget,
+                non_target_percentile,
+                interpolation='midpoint',
+                axis=1,
+            )
         )
 
         return non_target_weight*non_target_score + target_weight*target_score
@@ -130,8 +135,8 @@ def get_repeat_loss_func():
 #################################
 def run(
         target_idx,
-        seq_length,
         n_seqs,
+        seq_length,
         non_target_percentile=95,
         output_dir='.',
         output_prefix=None,
@@ -144,10 +149,10 @@ def run(
     ----------
     target_idx : int
         Index of the biosample to target within non-redundant DHS733-modeled biosamples.
-    seq_length : int
-        Length of sequences to generate.
     n_seqs : int
         Number of sequences to generate.
+    seq_length : int
+        Length of sequences to generate.
     non_target_percentile : float, optional
         Percentile of non-target biosample predictions to explicitly minimize. The higher
         this value, the more stringent the specificity may be, but target activity may
@@ -423,8 +428,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS733.')
     parser.add_argument('--target-idx', type=int, help='Target biosample index within non-redundant DHS733-modeled biosamples. See "dhs733_nonredundant_biosample_metadata.tsv" for a list of possible target biosamples.')
-    parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
+    parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--non-target-percentile', type=float, default=95, help='Percentile of non-target biosample predictions to explicitly minimize. Higher non-target percentile corresponds to more stringent designs.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
@@ -433,8 +438,8 @@ if __name__ == '__main__':
 
     run(
         target_idx=args.target_idx,
-        seq_length=args.seq_length,
         n_seqs=args.n_seqs,
+        seq_length=args.seq_length,
         non_target_percentile=args.non_target_percentile,
         output_dir=args.output_dir,
         output_prefix=args.output_prefix,

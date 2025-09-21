@@ -218,8 +218,8 @@ def get_pwm_loss_func(
 def run(
         target_idx,
         setpoint_vals,
-        seq_length,
         n_seqs,
+        seq_length,
         output_dir='.',
         output_prefix=None,
         seed=None,
@@ -234,10 +234,10 @@ def run(
     setpoint_vals : float or array-like
         Desired setpoint value(s) for the target biosample prediction. If an array,
         it should have shape (n_seqs,).
-    seq_length : int
-        Length of sequences to generate.
     n_seqs : int
         Number of sequences to generate.
+    seq_length : int
+        Length of sequences to generate.
     output_dir : str, optional
         Directory to save output files. Default is current directory.
     output_prefix : str, optional
@@ -350,7 +350,11 @@ def run(
     )
 
     # Save predictions from design model
-    generated_design_preds_df = generated_df.copy()
+    generated_design_preds_df = pandas.DataFrame(
+        index=generated_seq_ids, columns=['seq'] + biosamples, 
+    )
+    generated_design_preds_df.index.name = 'seq_id'
+    generated_design_preds_df['seq'] = generated_seqs
     generated_design_preds_df[biosamples] = generated_pred_design
     generated_design_preds_df.to_csv(
         os.path.join(output_dir, f"{output_prefix}_preds_design.csv.gz"),
@@ -358,14 +362,18 @@ def run(
     )
     
     # Generate predictions from validation model
-    print("Generating predictions from validation model...")
+    print("\nGenerating predictions from validation model...")
     model_val = src.model.load_model(VAL_MODEL_PATH)
     model_val = src.model.select_output_head(model_val, 0)
     generated_onehot_padded = numpy.zeros((n_seqs, src.definitions.DHS64_INPUT_LENGTH, 4), dtype=numpy.float32)
     generated_onehot_padded[:, :generated_onehot.shape[1], :] = generated_onehot
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
     
-    generated_val_preds_df = generated_df.copy()
+    generated_val_preds_df = pandas.DataFrame(
+        index=generated_seq_ids, columns=['seq'] + biosamples, 
+    )
+    generated_val_preds_df.index.name = 'seq_id'
+    generated_val_preds_df['seq'] = generated_seqs
     generated_val_preds_df[biosamples] = generated_pred_val
     generated_val_preds_df.to_csv(
         os.path.join(output_dir, f"{output_prefix}_preds_val.csv.gz"),
@@ -544,8 +552,8 @@ if __name__ == '__main__':
     parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.')
     parser.add_argument('--setpoint-min', type=float, default=None, help='Minimum setpoint value for the target biosample. If not specified, a default value will be used.')
     parser.add_argument('--setpoint-max', type=float, default=None, help='Maximum setpoint value for the target biosample. If not specified, a default value will be used.')
-    parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
+    parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on biosample index and name will be used.')
     parser.add_argument('--seed', type=int, default=None, help='Random seed for sequence initialization. If None, a random seed will be used.')
@@ -565,8 +573,8 @@ if __name__ == '__main__':
     run(
         target_idx=args.target_idx,
         setpoint_vals=setpoint_vals,
-        seq_length=args.seq_length,
         n_seqs=args.n_seqs,
+        seq_length=args.seq_length,
         output_dir=args.output_dir,
         output_prefix=args.output_prefix,
         seed=args.seed,

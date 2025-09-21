@@ -88,6 +88,7 @@ def get_target_min_plus_avg_loss_func(
 
     def target_loss_func(model_preds):
         # model_preds has dimensions (n_seqs, n_outputs)
+        n_model_outputs = model_preds.shape[1]
         model_preds_target = tensorflow.gather(
             model_preds,
             targets_idx,
@@ -137,8 +138,8 @@ def get_repeat_loss_func():
 #################################
 def run(
         targets_idx,
-        seq_length,
         n_seqs,
+        seq_length,
         output_dir='.',
         output_prefix=None,
         seed=None,
@@ -150,10 +151,10 @@ def run(
     ----------
     targets_idx : list of int
         List of indices of biosamples to maximize among all DHS64-modeled biosamples.
-    seq_length : int
-        Length of sequences to generate.
     n_seqs : int
         Number of sequences to generate.
+    seq_length : int
+        Length of sequences to generate.
     output_dir : str, optional
         Directory to save output files. Default is current directory.
     output_prefix : str, optional
@@ -265,7 +266,11 @@ def run(
     )
 
     # Save predictions from design model
-    generated_design_preds_df = generated_df.copy()
+    generated_design_preds_df = pandas.DataFrame(
+        index=generated_seq_ids, columns=['seq'] + biosamples, 
+    )
+    generated_design_preds_df.index.name = 'seq_id'
+    generated_design_preds_df['seq'] = generated_seqs
     generated_design_preds_df[biosamples] = generated_pred_design
     generated_design_preds_df.to_csv(
         os.path.join(output_dir, f"{output_prefix}_preds_design.csv.gz"),
@@ -273,14 +278,18 @@ def run(
     )
     
     # Generate predictions from validation model
-    print("Generating predictions from validation model...")
+    print("\nGenerating predictions from validation model...")
     model_val = src.model.load_model(VAL_MODEL_PATH)
     model_val = src.model.select_output_head(model_val, 0)
     generated_onehot_padded = numpy.zeros((n_seqs, src.definitions.DHS64_INPUT_LENGTH, 4), dtype=numpy.float32)
     generated_onehot_padded[:, :generated_onehot.shape[1], :] = generated_onehot
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
     
-    generated_val_preds_df = generated_df.copy()
+    generated_val_preds_df = pandas.DataFrame(
+        index=generated_seq_ids, columns=['seq'] + biosamples, 
+    )
+    generated_val_preds_df.index.name = 'seq_id'
+    generated_val_preds_df['seq'] = generated_seqs
     generated_val_preds_df[biosamples] = generated_pred_val
     generated_val_preds_df.to_csv(
         os.path.join(output_dir, f"{output_prefix}_preds_val.csv.gz"),
@@ -419,8 +428,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with activity spcecific to multiple biosamples using DHS64.')
     parser.add_argument('--targets-idx', type=str, help='Indices of biosamples to maximize among all DHS64-modeled biosamples, as a comma-separated list.')
-    parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
+    parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
     parser.add_argument('--output-prefix', type=str, default=None, help='Prefix for output files. If None, a prefix based on target biosample indices and names will be used.')
     parser.add_argument('--seed', type=int, default=None, help='Random seed for sequence initialization. If None, a random seed will be used.')
@@ -435,8 +444,8 @@ if __name__ == '__main__':
     # Run design
     run(
         targets_idx=targets_idx,
-        seq_length=args.seq_length,
         n_seqs=args.n_seqs,
+        seq_length=args.seq_length,
         output_dir=args.output_dir,
         output_prefix=args.output_prefix,
         seed=args.seed,
