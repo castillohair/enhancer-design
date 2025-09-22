@@ -14,12 +14,12 @@ import Bio.Seq
 
 BASE_DIR = '../../'
 sys.path.append(BASE_DIR)
-import utils.definitions
-import utils.model
-import utils.sequence
+import src.definitions
+import src.model
+import src.sequence
 
-DHS64_TRAIN_DATA_PATH = os.path.join(BASE_DIR, utils.definitions.DHS64_TRAIN_DATA_PATH)
-DATA_SPLITS_CHRS_PATH = os.path.join(BASE_DIR, utils.definitions.DATA_SPLITS_CHRS_PATH)
+DHS64_TRAIN_DATA_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_TRAIN_DATA_PATH)
+DATA_SPLITS_CHRS_PATH = os.path.join(BASE_DIR, src.definitions.DATA_SPLITS_CHRS_PATH)
 
 class SeqGenerator(tensorflow.keras.utils.Sequence):
     """
@@ -75,7 +75,7 @@ class SeqGenerator(tensorflow.keras.utils.Sequence):
         # Use pre-specified max sequence length
         # Padding will be chosen randomly on each batch
         batch_seqs = batch_table[('metadata', 'raw_sequence')].values.reshape(-1)
-        batch_seqs_onehot = utils.sequence.one_hot_encode(
+        batch_seqs_onehot = src.sequence.one_hot_encode(
             batch_seqs, 
             max_seq_len=self.max_seq_len, 
             mask_val=0,
@@ -201,10 +201,10 @@ def train_model(
     
     # Make model
     if starting_model is not None:
-        model = utils.model.load_model(f'{starting_model}.h5')
+        model = src.model.load_model(f'{starting_model}.h5')
     else:
-        model = utils.model.make_resnet(
-            utils.definitions.DHS64_INPUT_LENGTH,
+        model = src.model.make_resnet(
+            src.definitions.DHS64_INPUT_LENGTH,
             groups=4,
             blocks_per_group=3,
             filters=256,
@@ -223,12 +223,12 @@ def train_model(
     generator_train = SeqGenerator(
         dhs_df_train,
         batch_size=batch_size,
-        max_seq_len=utils.definitions.DHS64_INPUT_LENGTH,
+        max_seq_len=src.definitions.DHS64_INPUT_LENGTH,
     )
     generator_val = SeqGenerator(
         dhs_df_val,
         batch_size=batch_size,
-        max_seq_len=utils.definitions.DHS64_INPUT_LENGTH,
+        max_seq_len=src.definitions.DHS64_INPUT_LENGTH,
     )
 
     # Use Adam optimizer
