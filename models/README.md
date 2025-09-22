@@ -47,7 +47,7 @@ For comparison purposes, we trained a model where DHSs were not filtered by the 
 python train.py --data-split-idx 3
 ```
 
-Model training was originally performed in a `g5.2xlarge` AWS EC2 instance.
+Model training was originally performed in `g5.2xlarge` AWS EC2 instances containing an NVIDIA A10G Tensor Core GPU and 32 GiB RAM.
 
 ## DHS64-MPRA training
 
@@ -78,4 +78,4 @@ python train.py --data-split-idx 1
 python train.py --data-split-idx 3
 ```
 
-Model training was originally performed in a `g5.xlarge` AWS EC2 instance.
+Model training was originally performed in `g5.xlarge` AWS EC2 instances containing an NVIDIA A10G Tensor Core GPU and 16 GiB RAM.
