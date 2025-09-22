@@ -220,4 +220,4 @@ To reproduce the design of enhancers in the article, run the following:
 python dhs733_single_fsp.py --target-idx {i} --n-seqs 50 --seq-length 145 --non-target-percentile {p}
 ```
 
-for every value of `{i}` between 0 and 260, and `{p}` with values 90, 95, or 98. 
+for every value of `{i}` between 0 and 260, and `{p}` with values 85, 90, 95, or 98. 
