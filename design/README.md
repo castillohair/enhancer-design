@@ -189,7 +189,9 @@ for every value of `{i}` corresponding to the MPRA-assayed cell lines.
 
 Design enhancers for activity specific to any cell type / biosample in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx). Uses Fast SeqProp. 
 
-Note that we only allow designing for non-redundant biosamples (i.e. with non-repeated biosample names) within the DNase I Index, resulting in 261 possible targets. The notebook `dhs733_create_output_transformation_matrix.ipynb` analyzes redundant biosamples and creates a required transformation matrix `dhs733_nonredundant_transformation_matrix.npy` used to average redundant DHS733 outputs during design. It also creates `dhs733_nonredundant_biosample_metadata.tsv` which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
+We only design for non-redundant biosamples (i.e. with non-repeated biosample names) within the DNase I Index, resulting in 261 possible targets. The notebook `dhs733_create_output_transformation_matrix.ipynb` analyzes redundant biosamples and creates a transformation matrix `dhs733_nonredundant_transformation_matrix.npy` used to average redundant DHS733 outputs during design. It also creates the table `dhs733_nonredundant_biosample_metadata.tsv` which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
+
+The script supports designing enhancers with different levels of stringency via the `--non-target-percentile` parameter, where a higher value may result in a more stringent enhancer at the cost of lower target activity.
 
 This script can be run with the following arguments:
 
