@@ -9,9 +9,9 @@ The following scripts can be run to download model weights:
 - `dhs64_mpra/download_weights.sh`: DHS64-MRPA model weights.
 - `dhs733/download_weights.sh`: DHS733 model weights.
 
-## Data processing
+## Training data
 
-Processed DNase I Index data must be present for model training. See the documentation in the [`data`](/data/) folder.
+For training accessibility models, processed DNase I Index data must be present in `data/dhs_index`. For finetuning DHS64-MPRA, MPRA results and precalculated data splits must be present in `data/mpra`. See the documentation in the [`data`](/data/) folder for more information.
 
 ## DHS64 training
 
@@ -49,9 +49,32 @@ python train.py --data-split-idx 3
 
 Model training was originally performed in `g5.2xlarge` AWS EC2 instances containing an NVIDIA A10G Tensor Core GPU and 32 GiB RAM.
 
-## DHS64-MPRA training
+## DHS64-MPRA finetuning
 
-Coming soon!
+The script `dhs64_mpra/finetune.py` can be used to reproduce model finetuning or to train new models on additional data splits. The script accepts the following arguments:
+
+```
+usage: finetune.py [-h] [--data-split-idx DATA_SPLIT_IDX] [--pretrained-model-path PRETRAINED_MODEL_PATH]
+                   [--output-name OUTPUT_NAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --data-split-idx DATA_SPLIT_IDX
+                        Data split index (0-6).
+  --pretrained-model-path PRETRAINED_MODEL_PATH
+                        Path to the pretrained model to start training from. If not specified, a DHS64 model
+                        corresponding to the specified data split will be used.
+  --output-name OUTPUT_NAME
+                        Name of the output model. If not specified, a default name will be used.
+```
+
+In the article, finetuning on MPRA data splits #0, #1, and #3 was performed starting from DHS64 models trained on DHS data splits #0, #1, and #3 respectively. To reproduce this, run the following:
+
+```shell
+python finetune.py --data-split-idx 0
+python finetune.py --data-split-idx 1
+python finetune.py --data-split-idx 3
+```
 
 ## DHS733 training
 
