@@ -439,3 +439,76 @@ def make_model_ensemble(
     )
 
     return model_ensemble
+
+class MSE_Cosine_Loss(tensorflow.keras.losses.Loss):
+    """
+    Combines mean squared error (MSE) and cosine similarity losses.
+    
+    Parameters
+    ----------
+    w_mse, w_cosine : float
+        Weights for MSE and cosine similarity losses, respectively.
+
+    """
+    def __init__(self, w_mse, w_cosine):
+        super().__init__()
+        self.w_mse = w_mse
+        self.w_cosine = w_cosine
+
+    def call(self, y_true, y_pred):
+        # MSE loss
+        mse_loss = tensorflow.keras.losses.mean_squared_error(y_true, y_pred)
+        # Cosine loss
+        ym_true = tensorflow.math.reduce_mean(y_true, axis=1, keepdims=True)
+        ym_pred = tensorflow.math.reduce_mean(y_pred, axis=1, keepdims=True)
+        cosine_sim = tensorflow.keras.losses.cosine_similarity(y_true - ym_true, y_pred - ym_pred, axis=1)
+        # cosine_loss = 1 - cosine_sim
+        # Combine
+        return self.w_mse*mse_loss + self.w_cosine*cosine_sim
+    
+class SequentialLearningScheduler(tensorflow.keras.callbacks.Callback):
+    """
+    Learning rate scheduler that reloads the best model after every plateau.
+
+    Parameters
+    ----------
+    learning_rates : list of float
+        List of learning rates to use sequentially.
+    patience : int or list of int
+        Number of epochs with no improvement to wait before reloading the best model
+        and switching to the next learning rate. If an int is provided, the same patience
+        will be used for all learning rates. If a list is provided, it should have the
+        same length as learning_rates.
+
+    """
+    def __init__(self, learning_rates, patience=10):
+        super(SequentialLearningScheduler, self).__init__()
+        self.learning_rates = learning_rates
+        if type(patience) == int:
+            patience = [patience]*len(learning_rates)
+        else:
+            self.patience = patience
+        self.best_weights = None
+        self.best_loss = float('inf')
+        self.wait = 0
+        self.lr_index = 0  # Start with the first learning rate in the list
+
+    def on_epoch_end(self, epoch, logs=None):
+        current_loss = logs.get('val_loss')
+        if current_loss < self.best_loss:
+            self.best_loss = current_loss
+            self.best_weights = self.model.get_weights()
+            self.wait = 0
+        else:
+            self.wait += 1
+            if self.wait >= self.patience[self.lr_index]:
+                if self.lr_index < len(self.learning_rates) - 1:
+                    self.model.set_weights(self.best_weights)
+                    self.lr_index += 1
+                    new_lr = self.learning_rates[self.lr_index]
+                    tensorflow.keras.backend.set_value(self.model.optimizer.lr, new_lr)
+                    print(f'\nEpoch {epoch+1}: Plateau reached, reloading best model and setting learning rate to {new_lr}.')
+                    self.wait = 0
+                else:
+                    print("\nReached the end of the learning rates list. Stopping training.")
+                    self.model.stop_training = True

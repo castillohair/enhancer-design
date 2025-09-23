@@ -143,80 +143,6 @@ class SeqGenerator(tensorflow.keras.utils.Sequence):
         if self.shuffle == True:
             numpy.random.shuffle(self.shuffled_indices)
 
-# Class implementing combined MSE / cosine loss
-class MSE_Cosine_Loss(tensorflow.keras.losses.Loss):
-    """
-    Combines mean squared error (MSE) and cosine similarity losses.
-    
-    Parameters
-    ----------
-    w_mse, w_cosine : float
-        Weights for MSE and cosine similarity losses, respectively.
-
-    """
-    def __init__(self, w_mse, w_cosine):
-        super().__init__()
-        self.w_mse = w_mse
-        self.w_cosine = w_cosine
-
-    def call(self, y_true, y_pred):
-        # MSE loss
-        mse_loss = tensorflow.keras.losses.mean_squared_error(y_true, y_pred)
-        # Cosine loss
-        ym_true = tensorflow.math.reduce_mean(y_true, axis=1, keepdims=True)
-        ym_pred = tensorflow.math.reduce_mean(y_pred, axis=1, keepdims=True)
-        cosine_sim = tensorflow.keras.losses.cosine_similarity(y_true - ym_true, y_pred - ym_pred, axis=1)
-        # cosine_loss = 1 - cosine_sim
-        # Combine
-        return self.w_mse*mse_loss + self.w_cosine*cosine_sim
-    
-class SequentialLearningScheduler(tensorflow.keras.callbacks.Callback):
-    """
-    Learning rate scheduler that reloads the best model after every plateau.
-
-    Parameters
-    ----------
-    learning_rates : list of float
-        List of learning rates to use sequentially.
-    patience : int or list of int
-        Number of epochs with no improvement to wait before reloading the best model
-        and switching to the next learning rate. If an int is provided, the same patience
-        will be used for all learning rates. If a list is provided, it should have the
-        same length as learning_rates.
-
-    """
-    def __init__(self, learning_rates, patience=10):
-        super(SequentialLearningScheduler, self).__init__()
-        self.learning_rates = learning_rates
-        if type(patience) == int:
-            patience = [patience]*len(learning_rates)
-        else:
-            self.patience = patience
-        self.best_weights = None
-        self.best_loss = float('inf')
-        self.wait = 0
-        self.lr_index = 0  # Start with the first learning rate in the list
-
-    def on_epoch_end(self, epoch, logs=None):
-        current_loss = logs.get('val_loss')
-        if current_loss < self.best_loss:
-            self.best_loss = current_loss
-            self.best_weights = self.model.get_weights()
-            self.wait = 0
-        else:
-            self.wait += 1
-            if self.wait >= self.patience[self.lr_index]:
-                if self.lr_index < len(self.learning_rates) - 1:
-                    self.model.set_weights(self.best_weights)
-                    self.lr_index += 1
-                    new_lr = self.learning_rates[self.lr_index]
-                    tensorflow.keras.backend.set_value(self.model.optimizer.lr, new_lr)
-                    print(f'\nEpoch {epoch+1}: Plateau reached, reloading best model and setting learning rate to {new_lr}.')
-                    self.wait = 0
-                else:
-                    print("\nReached the end of the learning rates list. Stopping training.")
-                    self.model.stop_training = True
-
 # Main training function
 def train_model(
         data_split_idx=0,
@@ -284,13 +210,13 @@ def train_model(
     )
 
     # Add custom loss function and compile
-    loss = MSE_Cosine_Loss(w_mse, w_cosine)
+    loss = src.model.MSE_Cosine_Loss(w_mse, w_cosine)
     adam = tensorflow.keras.optimizers.Adam(lrs[0])
     model.compile(loss=loss, optimizer=adam)
 
     # Callbacks: learning rate scheduler and checkpointing
     callbacks = [
-        SequentialLearningScheduler(lrs, patience=patience_r),
+        src.model.SequentialLearningScheduler(lrs, patience=patience_r),
         tensorflow.keras.callbacks.ModelCheckpoint(
             filepath=output_name + '_checkpoint_{epoch:02d}.h5',
             save_weights_only=False,
@@ -318,13 +244,22 @@ if __name__=='__main__':
     # Read command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--data-split-idx', type=int, default=0, help='Data split index (0-9).',
+        '--data-split-idx',
+        type=int,
+        default=0,
+        help='Data split index (0-9).',
     )
     parser.add_argument(
-        '--starting-model', type=str, default=None, help='Name of starting model file to continue training from.',
+        '--starting-model',
+        type=str,
+        default=None,
+        help='Name of starting model file to continue training from.',
     )
     parser.add_argument(
-        '--output-name', type=str, default=None, help='Name of the output model. If not, a default name will be used.',
+        '--output-name',
+        type=str,
+        default=None,
+        help='Name of the output model. If not, a default name will be used.',
     )
 
     args = parser.parse_args()

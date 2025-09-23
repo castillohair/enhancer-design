@@ -279,16 +279,29 @@ if __name__=='__main__':
     # Read command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--data-split-idx', type=int, default=0, help='Data split index (0-9).',
+        '--data-split-idx',
+        type=int,
+        default=0,
+        help='Data split index (0-9).',
     )
     parser.add_argument(
-        '--numsamples-max', type=int, default=None, help='Maximum number of biosamples where DHSs used for training should be active.',
+        '--numsamples-max',
+        type=int,
+        default=None,
+        help='Maximum number of biosamples where DHSs used for training ' \
+        'should be active.',
     )
     parser.add_argument(
-        '--starting-model', type=str, default=None, help='Name of starting model file to continue training from.',
+        '--starting-model',
+        type=str,
+        default=None,
+        help='Name of starting model file to continue training from.',
     )
     parser.add_argument(
-        '--output-name', type=str, default=None, help='Name of the output model. If not, a default name will be used.',
+        '--output-name',
+        type=str,
+        default=None,
+        help='Name of the output model. If not, a default name will be used.',
     )
 
     args = parser.parse_args()
