@@ -3,7 +3,7 @@ from itertools import product
 
 import numpy
 import pandas
-from scipy.spatial.distance import euclidean
+import scipy
 
 import Bio
 import Bio.Seq
@@ -371,7 +371,7 @@ def _get_min_euc_dists(vecsA, vecsB, subsampleB=None, random_seed_subsample=None
         
         distances = numpy.zeros(n_seqsB)
         for j in range(n_seqsB):
-            distances[j] = euclidean(vecsA[i], vecsB[j])
+            distances[j] = scipy.spatial.distance.euclidean(vecsA[i], vecsB[j])
             
         # don't need to normalize here
         min_distances[i] = numpy.min(distances[distances != 0])
