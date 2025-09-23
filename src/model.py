@@ -485,7 +485,7 @@ class SequentialLearningScheduler(tensorflow.keras.callbacks.Callback):
         super(SequentialLearningScheduler, self).__init__()
         self.learning_rates = learning_rates
         if type(patience) == int:
-            patience = [patience]*len(learning_rates)
+            self.patience = [patience]*len(learning_rates)
         else:
             self.patience = patience
         self.best_weights = None
