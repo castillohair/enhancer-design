@@ -8,8 +8,8 @@ Located in the [`dhs_index`](./dhs_index/) subfolder. Processed data necessary f
 
 ## Cell line and mouse retina MPRA results
 
-Located in the [`mpra`](./mpra/) subfolder. The script [`download_mpra_results.sh`](./dhs_index/download_processed_data.sh) downloads a `.tsv` file containing annotations and processed MPRA measurements of tested enhancers that passed sequencing quality filters. Annotation columns include:
-- Sequence id
+Located in the [`mpra`](./mpra/) subfolder. The script [`download_mpra_results.sh`](./mpra/download_mpra_results.sh) downloads the file `enhancer_mpra_processed.tsv` containing annotations and processed MPRA measurements of tested enhancers that passed sequencing quality filters. Annotation columns include:
+- Sequence ID
 - Enhancer sequence
 - Source (i.e. genome, Fast SeqProp, DEN)
 - Category (e.g. the value `single_fsp` corresponds to enhancers targing a single biosample designed with Fast SeqProp), intended target biosample(s)
@@ -17,9 +17,11 @@ Located in the [`mpra`](./mpra/) subfolder. The script [`download_mpra_results.s
 - Measured accessibility for genome-sourced sequences (columns starting with `dhs_signal_`)
 - DHS64-predicted accessibilities (columns starting with `dhs_pred_`).
 
-MPRA result columns include
-- Sequencing read counts (`{cell_type}_reads_r{i}` where `i` corresponds to the replicate number)
-- DESeq2 outputs for each assayed cell type, most importantly log2(RNA/DNA) estimates (`log2FC_{cell_type}`).
+MPRA result columns include:
+- Sequencing read counts in columns `{cell_type}_reads_r{i}`, where `i` corresponds to the replicate number.
+- DESeq2 outputs for each assayed cell type, most importantly log2(RNA/DNA) estimates in columns `log2FC_{cell_type}`.
+
+The script [`download_mpra_data_splits.sh`](./mpra/download_mpra_data_splits.sh) downloads file `mpra_data_splits.json` containing MPRA sequence IDs partitioned into 7 folds, which were used for finetuning the DHS64-MPRA model. The notebook [`make_data_splits.ipynb`](./mpra/make_data_splits.ipynb) can regenerate this file, although downloading the original file should be preferred.
 
 `.fastq` files containing raw sequencing data can be downloaded from GEO (TODO Add GEO link when available). However, only the processed data table is used in the code in this repository.
 
