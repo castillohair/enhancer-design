@@ -60,7 +60,7 @@ Processed DNase I Index data used for training can be downloaded via the include
 
 Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can also be used to finetune on data splits not originally used in the article, and as a starting point to finetune on new MPRA measurements. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information.
 
-Processed MPRA measurements used for finetuning can be downloaded via the `download_data.py` script in the [`data`](./data/) folder. Necessary data split information will also be downloaded. More information can be found ["here"](./data/README.md#cell-line-and-mouse-retina-mpra-results).
+Processed MPRA measurements used for finetuning can be downloaded via the `download_data.py` script in the [`data`](./data/) folder. Necessary data split information will also be downloaded. More information can be found [here](./data/README.md#cell-line-and-mouse-retina-mpra-results).
 
 <!---
 ### Reproduce publication analysis

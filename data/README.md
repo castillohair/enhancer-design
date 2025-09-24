@@ -4,13 +4,13 @@ The datasets described below are necessary for different model training, sequenc
 
 ## Data for training accessibility models
 
-Processed data necessary for model training and some analysis, located in the [`dhs_index`](./dhs_index/) subfolder. The [`process_data.ipynb`](./dhs_index/process_data.ipynb) notebook reproduces our data processing workflow starting from raw published sources, but re-running this should not be necessary in most cases.
+Processed data necessary for model training and some analysis will be downloaded into the [`dhs_index`](./dhs_index/) subfolder. The [`process_data.ipynb`](./dhs_index/process_data.ipynb) notebook reproduces our data processing workflow starting from raw published sources, but re-running this should not be necessary in most cases.
 
 ## Cell line and mouse retina MPRA results
 
-Located in the [`mpra`](./mpra/) subfolder. The downloaded file `enhancer_mpra_processed.tsv` contains annotations and processed MPRA measurements of tested enhancers. 
+Processed MPRA data will be downloaded into the [`mpra`](./mpra/) subfolder.
 
-Annotation columns include:
+The downloaded file `enhancer_mpra_processed.tsv` contains annotations and processed MPRA measurements of tested enhancers. Annotation columns include:
 - Sequence ID
 - Enhancer sequence
 - Source (i.e. genome, Fast SeqProp, DEN)
