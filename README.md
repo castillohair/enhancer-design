@@ -12,7 +12,7 @@ This repository contains the following main components:
 
 - **Sequence-to-function predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictor classes, each with three individual models independently trained on different chromosome-based data splits:
     
-    - **DHS64**: *chromatin accessibility* predictor trained on a [subset of 64 samples](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) in the DNase I Index, selected to represent a wide variety of tissues and cell types.
+    - **DHS64**: *chromatin accessibility* predictor trained on a [subset of 64 samples](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) in the DNase I Index, selected to represent a wide variety of tissues and cell types.
     - **DHS733**: *chromatin accessibility* predictor trained on all 733 DNase I Index samples.
     - **DH64-MPRA**: *enhancer activity* predictor, developed by finetuning DHS64 models on MPRA data from 12 cell lines collected by us.
     
