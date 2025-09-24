@@ -2,9 +2,9 @@
 
 ## Description and general usage
 
-The scripts here reproduce the enhancer design tasks in our article. These include:
+The enhancer design scripts here reproduce the design tasks in our article. These include:
 
-- Design enhancers specific to **one biosample (i.e. cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) modeled by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) (uses Fast SeqProp), [`dhs64_single_den.py`](#dhs64_single_denpy) (uses DENs).
+- Design enhancers specific to **one biosample (i.e. cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) (uses Fast SeqProp), [`dhs64_single_den.py`](#dhs64_single_denpy) (uses DENs).
 - Design enhancers specific to **multiple biosamples** among those modeled by DHS64: [`dhs64_multiple_fsp.py`](#dhs64_multiple_fsppy).
 - Design enhancers specific to one DHS64-modeled biosample with **tunable target activity**: [`dhs64_single_tunable.py`](#dhs64_single_tunable_fsppy).
 - Design enhancers specific to **any of the hundreds of biosamples in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**: [`dhs733_single_fsp.py`](#dhs733_single_fsppy).
@@ -18,7 +18,7 @@ Scripts include a command-line interface which can generally be used as follows:
 python {design_script}.py --target-idx {i} --n-seqs 100 --seq-length 145
 ```
 
-Where `{i}` corresponds to the index of the biosample to target. See each individual subsection below for a more precise description of each script's interface.
+Where `{i}` corresponds to the index of the biosample to target. See each individual subsection below for a precise description of each script's interface.
 
 ### Outputs
 
@@ -28,7 +28,7 @@ The output of each script is a directory with the following files:
 - `{output-prefix}_editdistance.png`: Violin plot of the **normalized edit distance** between generated sequences, as a measure of sequence diversity.
 - `{output-prefix}_preds_design_boxplot.png`: Box plot of **predicted accessibilities** of generated sequences, as given by the **model used during sequence design**. This model is always an ensemble of two DHS64 or DHS733 models independently trained on distinct data splits.
 - `{output-prefix}_preds_design.csv.gz`: Table with **predicted accessibilities** of generated sequences as given by the **design model**.
-- `{output-prefix}_preds_val_boxplot.png`: Box plot of **predicted accessibilities** of generated sequences as given by a **validation model**. This model was independently trained on a distinct data split than the models used for design.
+- `{output-prefix}_preds_val_boxplot.png`: Box plot of **predicted accessibilities** of generated sequences as given by a **validation model**. This model was independently trained on a distinct data split from the models used for design.
 - `{output-prefix}_preds_val.csv.gz`: Table with **predicted accessibilities** of generated sequences as given by the **validation model**.
 - `{output-prefix}_run_metadata.json`: Parameters used for sequence generation, including arguments provided to Fast SeqProp and DEN.
 - `{output-prefix}_seq_bitmap.png`: Generated sequences represented as a bitmap, where rows correspond to individual sequences and pixels represent nucleotide identity (i.e. A, C, G, or T).
@@ -38,7 +38,7 @@ The output of each script is a directory with the following files:
 
 `output-prefix` can be specified via a command-line argument, otherwise it defaults to `{target_idx}_{target_biosample_name}`. Some scripts create additional files as indicated below.
 
-### Script code organization
+### Code organization
 
 These scripts can also be used as starting points for custom sequence design tasks. The code is organized as follows:
 
@@ -47,7 +47,7 @@ These scripts can also be used as starting points for custom sequence design tas
 3. **Main sequence design function**. This function runs Fast SeqProp or trains DENs to generate sequences, makes and saves predictions using both the design and validation models, and creates various plots to analyze the generated sequences.
 4. **Entry point** which parses command-line arguments and runs the main design function.
 
-Note that most optimization-related arguments provided to Fast SeqProp and DEN are not currently exposed to the command-line API. Thus, if needed, these have to be changed by modifying their values in the code.
+Note that most optimization-related arguments provided to Fast SeqProp and DEN are not currently exposed to the command-line API, and would need to be modified inside the code if needed.
 
 ## `dhs64_single_fsp.py`
 
@@ -84,7 +84,7 @@ for every value of `{i}` between 0 and 63 inclusive.
 
 **Train a DEN** to generate enhancers with activity specific to **one out of [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. 
 
-Note that the required file `dhs64_single_den_generator.py` defines the generator network architecture. Currently this architecture only allows for 145nt-long sequences, and should be modified if a different sequence length is needed.
+The required file `dhs64_single_den_generator.py` defines the generator network architecture. Currently this architecture only allows for 145nt-long sequences, and should be modified if a different sequence length is needed.
 
 This script can be run with the following arguments:
 
@@ -111,7 +111,7 @@ optional arguments:
 This script generates the following additional output files:
 - `{output-prefix}_generator.h5`: Trained generator.
 
-To reproduce the design of enhancers in the article, run the following:
+To reproduce the enhancer design task in the article, run the following:
 
 ```shell
 python dhs64_single_den.py --target-idx {i} --n-seqs 250
@@ -119,7 +119,7 @@ python dhs64_single_den.py --target-idx {i} --n-seqs 250
 
 for every value of `{i}` between 0 and 63 inclusive.
 
-This script also allows to use a previously trained DEN generator to generate new sequences. In fact, the script `dhs64_single_den_pretrained_145nt_download.sh` can be used to download trained generators specific to each biosample, along with parameters used for training.
+This script also allows to use a previously trained DEN generator to generate new sequences. The script `dhs64_single_den_pretrained_145nt_download.sh` downloads generators specific to each biosample trained as part of the article, along with parameters used for training.
 
 ## `dhs64_multiple_fsp.py`
 
@@ -205,7 +205,7 @@ for `{i}` including 6 (NT2_D1), 17 (GM12878), 19 (786_O), 30 (SKNSH), 31 (WERI_R
 
 Design enhancers for activity specific to **any cell type / biosample in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**. We only design for **non-redundant biosamples** (i.e. with unique biosample names) within the DNase I Index, resulting in **261 possible targets**. Uses Fast SeqProp.
 
-The notebook `dhs733_create_output_transformation_matrix.ipynb` analyzes redundant biosamples and creates a transformation matrix `dhs733_nonredundant_transformation_matrix.npy` used to average redundant DHS733 outputs during design. It also creates the table `dhs733_nonredundant_biosample_metadata.tsv` which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
+The notebook `dhs733_create_output_transformation_matrix.ipynb` analyzes redundant biosamples and creates a transformation matrix `dhs733_nonredundant_transformation_matrix.npy` used to average redundant DHS733 outputs during design. This notebook also creates the table `dhs733_nonredundant_biosample_metadata.tsv` which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
 
 The script supports designing enhancers with different levels of stringency via the `--non-target-percentile` parameter, where a higher value may result in a more stringent enhancer at the cost of lower target activity. The optimal value will depend on the cell type / biosample of interest.
 
