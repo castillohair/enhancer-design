@@ -2,7 +2,7 @@
 
 The included scripts reproduce the enhancer design tasks in our article. These include:
 
-- Design enhancers specific to **one biosample (i.e. tissue/cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) and [`dhs64_single_den.py`](#dhs64_single_denpy).
+- Design enhancers specific to **one biosample (i.e. tissue/cell type)** among [64 biosamples](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) and [`dhs64_single_den.py`](#dhs64_single_denpy).
 - Design enhancers specific to **multiple biosamples** among those modeled by DHS64: [`dhs64_multiple_fsp.py`](#dhs64_multiple_fsppy).
 - Design enhancers specific to one DHS64-modeled biosample with **tunable target activity**: [`dhs64_single_tunable.py`](#dhs64_single_tunable_fsppy).
 - Design enhancers specific to **any of the hundreds of biosamples in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**: [`dhs733_single_fsp.py`](#dhs733_single_fsppy).
@@ -51,7 +51,7 @@ Note that most optimization-related arguments provided to Fast SeqProp and DEN a
 
 ## `dhs64_single_fsp.py`
 
-Design enhancers with activity specific to **one out of [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Uses **Fast SeqProp**. 
+Design enhancers with activity specific to **one out of [64 biosamples / cell types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Uses **Fast SeqProp**. 
 
 This script can be run with the following arguments:
 
@@ -82,7 +82,7 @@ for every value of `{i}` between 0 and 63 inclusive.
 
 ## `dhs64_single_den.py`
 
-**Train a DEN** to generate enhancers with activity specific to **one out of [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. 
+**Train a DEN** to generate enhancers with activity specific to **one out of [64 biosamples / cell types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. 
 
 The required file `dhs64_single_den_generator.py` defines the generator network architecture. Currently this architecture only allows for 145nt-long sequences, and should be modified if a different sequence length is needed.
 
@@ -123,7 +123,7 @@ This script also allows to use a previously trained DEN generator to generate ne
 
 ## `dhs64_multiple_fsp.py`
 
-Design enhancers with activity specific to **two or more out of the [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Uses Fast SeqProp. 
+Design enhancers with activity specific to **two or more out of the [64 biosamples / cell types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Uses Fast SeqProp. 
 
 This script can be run with the following arguments:
 
@@ -164,7 +164,7 @@ For {i,j,k} including 30,17,19 (SKNSH + GM12878 + 786_O), 60,61,57 (MCF7 + HeLaS
 
 ## `dhs64_single_tunable_fsp.py`
 
-Design enhancers for activity specific to **one out of [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Instead of maximizing activity, this script optimizes enhancers for a **range of submaximal target activity setpoints** linearly interpolated between a specified minimum and maximum. A set of precomputed default setpoint limits are included, covering what we found to be the Fast SeqProp-enabled range on each biosample.
+Design enhancers for activity specific to **one out of [64 biosamples / cell types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Instead of maximizing activity, this script optimizes enhancers for a **range of submaximal target activity setpoints** linearly interpolated between a specified minimum and maximum. A set of precomputed default setpoint limits are included, covering what we found to be the Fast SeqProp-enabled range on each biosample.
 
 This script can be run with the following arguments:
 
