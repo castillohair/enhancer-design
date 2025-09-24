@@ -427,7 +427,7 @@ def run(
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with activity spcecific to multiple biosamples using DHS64.')
-    parser.add_argument('--targets-idx', type=str, help='Indices of biosamples to maximize among all DHS64-modeled biosamples, as a comma-separated list.')
+    parser.add_argument('--targets-idx', type=str, help='Indices of biosamples to maximize among all DHS64-modeled biosamples, as a comma-separated list.', required=True)
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')

@@ -549,7 +549,7 @@ def run(
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS64.')
-    parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.')
+    parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.', required=True)
     parser.add_argument('--setpoint-min', type=float, default=None, help='Minimum setpoint value for the target biosample. If not specified, a default value will be used.')
     parser.add_argument('--setpoint-max', type=float, default=None, help='Maximum setpoint value for the target biosample. If not specified, a default value will be used.')
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')

@@ -427,7 +427,7 @@ def run(
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run Fast SeqProp to generate sequences with biosample-specific activity using DHS733.')
-    parser.add_argument('--target-idx', type=int, help='Target biosample index within non-redundant DHS733-modeled biosamples. See "dhs733_nonredundant_biosample_metadata.tsv" for a list of possible target biosamples.')
+    parser.add_argument('--target-idx', type=int, help='Target biosample index within non-redundant DHS733-modeled biosamples. See "dhs733_nonredundant_biosample_metadata.tsv" for a list of possible target biosamples.', required=True)
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--non-target-percentile', type=float, default=95, help='Percentile of non-target biosample predictions to explicitly minimize. Higher non-target percentile corresponds to more stringent designs.')

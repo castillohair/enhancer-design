@@ -773,7 +773,7 @@ def run(
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Train a Deep Exploration Network to generate sequences with biosample-specific activity using DHS64.')
-    parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.')
+    parser.add_argument('--target-idx', type=int, help='Target biosample index within all DHS64-modeled biosamples.', required=True)
     parser.add_argument('--n-seqs', type=int, default=100, help='Number of sequences to generate.')
     # parser.add_argument('--seq-length', type=int, default=145, help='Length of sequences to generate.')
     parser.add_argument('--output-dir', type=str, default='results', help='Directory to save output files.')
