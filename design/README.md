@@ -1,6 +1,6 @@
 # Model-based enhancer design scripts
 
-The enhancer design scripts here reproduce the design tasks in our article. These include:
+The included scripts reproduce the enhancer design tasks in our article. These include:
 
 - Design enhancers specific to **one biosample (i.e. tissue/cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) and [`dhs64_single_den.py`](#dhs64_single_denpy).
 - Design enhancers specific to **multiple biosamples** among those modeled by DHS64: [`dhs64_multiple_fsp.py`](#dhs64_multiple_fsppy).
