@@ -119,7 +119,7 @@ python dhs64_single_den.py --target-idx {i} --n-seqs 250
 
 for every value of `{i}` between 0 and 63 inclusive.
 
-This script also allows to use a previously trained DEN generator to generate new sequences. The script `dhs64_single_den_pretrained_145nt_download.sh` downloads generators specific to each biosample trained as part of the article, along with parameters used for training.
+This script also allows to use a previously trained DEN generator to generate new sequences. The script `dhs64_single_den_pretrained_145nt_download.py` downloads generators specific to each biosample trained as part of the article, along with parameters used for training.
 
 ## `dhs64_multiple_fsp.py`
 

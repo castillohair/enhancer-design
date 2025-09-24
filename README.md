@@ -16,7 +16,7 @@ This repository contains the following main components:
     - **DHS733**: *chromatin accessibility* predictor trained on all 733 DNase I Index samples.
     - **DH64-MPRA**: *enhancer activity* predictor, developed by finetuning DHS64 models on MPRA data from 12 cell lines collected by us.
     
-- **Enhancer design code**. The folder [`design`](./design/) contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use updated versions of **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [github](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [github](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple simultaneous cell types, with maximal or tunable activites.
+- **Enhancer design code**. The folder [`design`](./design/) contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use updated versions of **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [github](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [github](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple cell types, with maximal or tunable activites.
 
 <!---
 - **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and natural controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
@@ -25,10 +25,10 @@ This repository contains the following main components:
 - **Atlas of human synthetic enhancers**. We include two repositories of synthetic enhancers designed with [DHS64]() (~32k, 500 per target) or [DHS733]() (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
 
 Additional folders include:
-- [`data`](./data): Data necessary for model training and analysis, and scripts to download such data.
+- [`data`](./data): Data necessary for model training and analysis.
 - [`src`](./src): python code used across the repository.
 
-Individual folders contain their own README.md file with more specific instructions.
+Individual folders contain their own README.md file with more specific information.
 
 ## Use cases
 
@@ -42,7 +42,7 @@ Note that a subset of DHS64-designed enhancers has been experimentally validated
 
 Reasons to generate new enhancers beyond the Atlas may include: 1) different enhancer lengths, 2) submaximal target activity, 3) targeting multiple cell types.
 
-To design new enhancers, packages in the "Requirements" section below must be present, and the appropriate model weights should be downloaded into [`models`](./models/) using the included scripts. Then, the scripts included in the [`design`](./design/) folder can be run with the appropriate settings or modified as needed.
+To design new enhancers, install the [required packages](#requirements) and download the appropriate model weights into [`models`](./models/) using the included `download_model_weights.py` script. Then, scripts included in the [`design`](./design/) folder can be run with the appropriate settings or modified as needed.
 
 In addition, we trained generative models called [Deep Exploration Networks](https://doi.org/10.1016/j.cels.2020.05.007) to target each of the DHS64-modeled samples. If the goal is to generate additional enhancers targeted to these samples, pre-trained DENs can be downloaded and used via included scripts.
 
@@ -54,13 +54,13 @@ See the [`design`](./design/) folder `README` for more information.
 
 Model training can be performed via the `train.py` scripts included in the [`models/dhs64`](./models/dhs64/) and [`models/dhs733`](models/dhs733/) subfolders. These can be used to reproduce training of the models used in the article, as well as to train new models on additional data splits we did not originally use. See the [models](./models/) folder `README` file for more information.
 
-Processed DNase I Index data used for training can be downloaded via the included `download_processed_data.sh` script in the [`data/dhs_index`](./data/dhs_index) folder. For more information see the [Data for training accessibility models](./data/README.md#data-for-training-accessibility-models) section in the `data` folder `README`.
+Processed DNase I Index data used for training can be downloaded via the included `download_data.py` script in the [`data`](./data) folder. More information can be found [here](./data/README.md#data-for-training-accessibility-models).
 
 #### Enhancer activity models
 
-Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can also be used to finetune on data splits not originally used in the article, and as a starting point to finetune on new MPRA measurements. See the [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) section in the `models` folder `README`.
+Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can also be used to finetune on data splits not originally used in the article, and as a starting point to finetune on new MPRA measurements. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information.
 
-Processed MPRA measurements used for finetuning can be downloaded via the `download_mpra_results.sh` script. Precalculated data split information is also necessary and can be downloaded with `download_mpra_data_splits.sh`. For more information, see the ["MPRA results"](./data/README.md#cell-line-and-mouse-retina-mpra-results) section in the `data` folder `README`.
+Processed MPRA measurements used for finetuning can be downloaded via the `download_data.py` script in the [`data`](./data/) folder. Necessary data split information will also be downloaded. More information can be found ["here"](./data/README.md#cell-line-and-mouse-retina-mpra-results).
 
 <!---
 ### Reproduce publication analysis
