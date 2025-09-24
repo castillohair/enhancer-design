@@ -2,7 +2,7 @@
 
 The enhancer design scripts here reproduce the design tasks in our article. These include:
 
-- Design enhancers specific to **one biosample (i.e. cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) (uses Fast SeqProp), [`dhs64_single_den.py`](#dhs64_single_denpy) (uses DENs).
+- Design enhancers specific to **one biosample (i.e. tissue/cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) and [`dhs64_single_den.py`](#dhs64_single_denpy).
 - Design enhancers specific to **multiple biosamples** among those modeled by DHS64: [`dhs64_multiple_fsp.py`](#dhs64_multiple_fsppy).
 - Design enhancers specific to one DHS64-modeled biosample with **tunable target activity**: [`dhs64_single_tunable.py`](#dhs64_single_tunable_fsppy).
 - Design enhancers specific to **any of the hundreds of biosamples in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**: [`dhs733_single_fsp.py`](#dhs733_single_fsppy).
@@ -164,7 +164,7 @@ For {i,j,k} including 30,17,19 (SKNSH + GM12878 + 786_O), 60,61,57 (MCF7 + HeLaS
 
 ## `dhs64_single_tunable_fsp.py`
 
-Design enhancers for activity specific to **one out of [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Instead of maximizing activity, this script optimizes enhancers for a **range of submaximal target activity setpoints** linearly interpolated between a specified minimum and maximum. A set of precomputed default setpoint limits are included, covering what we found to be the Fast SeqProp-accessible range on each biosample.
+Design enhancers for activity specific to **one out of [64 biosamples / cell types](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx)** captured by our initial model DHS64. Instead of maximizing activity, this script optimizes enhancers for a **range of submaximal target activity setpoints** linearly interpolated between a specified minimum and maximum. A set of precomputed default setpoint limits are included, covering what we found to be the Fast SeqProp-enabled range on each biosample.
 
 This script can be run with the following arguments:
 
@@ -203,7 +203,7 @@ for `{i}` including 6 (NT2_D1), 17 (GM12878), 19 (786_O), 30 (SKNSH), 31 (WERI_R
 
 ## `dhs733_single_fsp.py`
 
-Design enhancers for activity specific to **any cell type / biosample in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**. We only design for **non-redundant biosamples** (i.e. with unique biosample names) within the DNase I Index, resulting in **261 possible targets**. Uses Fast SeqProp.
+Design enhancers for activity specific to **any biosample in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**, including **tissues**, **cell types**, and **cell states**. We only design for **non-redundant biosamples** (i.e. with unique biosample names) within the DNase I Index, resulting in **261 possible targets**. Uses Fast SeqProp.
 
 The notebook `dhs733_create_output_transformation_matrix.ipynb` analyzes redundant biosamples and creates a transformation matrix `dhs733_nonredundant_transformation_matrix.npy` used to average redundant DHS733 outputs during design. This notebook also creates the table `dhs733_nonredundant_biosample_metadata.tsv` which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
 
