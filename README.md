@@ -30,7 +30,6 @@ Additional folders include:
 
 Individual folders contain their own README.md file with more specific instructions.
 
-
 ## Use cases
 
 ### Using pre-designed synthetic enhancers
@@ -71,34 +70,24 @@ Each analysis included in [`analysis`](./analysis/) will have its own workflow a
 
 ## Requirements
 
-Code was written in Python 3 (tested in 3.7-3.10). An included script `install_requirements.sh` should take care of dependencies.
+Code was written in Python 3 (tested in 3.7-3.10). Dependencies can be installed via `pip install -r requirements.txt`.
 
-The following are specific notes about required packages and versions:
+Notes about special requirements:
 
-- **Standard packages**: The following can be installed normally with most package managers:
-    - `biopython` (tested v1.79)
-    - `deeplift` (tested 0.6.13.0)
-    - `editdistance` (tested v0.6.0)
-    - `logomaker` (tested 0.8)
-    - `matplotlib` (tested v3.5.1)
-    - `numpy` (tested v1.26.4)
-    - `pandas` (tested v1.4.3)
-    - `prtpy` (tested v0.8.2)
-    - `scipy` (tested v1.12.0)
-    - `seaborn` (tested v0.13.2)
-    - `tables` (tested v3.9.2).
 - **AI modeling packages**: All model-related code requires `tensorflow`,  Keras 2, and a compatible `tensorflow-probability`. The following version combinations have been tested:
     - `tensorflow` 2.7, `tensorflow-probability` 0.15.0
     - `tensorflow` 2.10, `tensorflow-probability` 0.15.0
     - `tensorflow` 2.14, `tensorflow-probability` 0.22.1
 
-    If using other versions, note that starting with v2.16, `tensorflow` works with Keras 3 by default and may not work out of the box with this repository. Additionally, compatibility between `tensorflow` and `tensorflow-probability` should be verified at https://github.com/tensorflow/probability/releases.
+    These require `numpy` 1.x.
+    
+    If using other `tensorflow` versions, note that starting with v2.16, Keras 3 is included by default which may not work out of the box with this repository. Additionally, compatibility between `tensorflow` and `tensorflow-probability` should be verified at https://github.com/tensorflow/probability/releases.
 
-- **Custom/modified packages for AI sequence design and interpretation**: The following need to be downloaded from the linked github repositories and installed manually:
-    - [`isolearn`](https://github.com/castillohair/isolearn)
-    - [`Fast SeqProp`](https://github.com/castillohair/corefsp)
-    - [`DEN`](https://github.com/castillohair/genesis)
-    - [`SHAP`](https://github.com/castillohair/shap)
+- **Custom/modified packages for AI sequence design and interpretation**: The following should be installed from the linked repositories:
+    - [`Fast SeqProp`](https://github.com/castillohair/corefsp): re-implemented compared to the original publication.
+    - [`isolearn`](https://github.com/castillohair/isolearn): required by DEN, modified to work with tensorflow 2.
+    - [`DEN`](https://github.com/castillohair/genesis): modified to work with tensorflow 2.
+    - [`SHAP`](https://github.com/castillohair/shap): added modifications originally introduced by the Kundaje lab into a more recent SHAP version that works with tensorflow 2.
 
 ## Citation
 

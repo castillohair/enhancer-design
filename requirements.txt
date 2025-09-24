@@ -1,0 +1,18 @@
+numpy<2.0
+scipy
+openpyxl
+pandas
+matplotlib
+seaborn
+tensorflow==2.14
+tensorflow-probability==0.22.1
+biopython
+deeplift
+editdistance
+logomaker
+prtpy
+tables
+shap @ git+https://github.com/castillohair/shap@master
+isolearn @ git+https://github.com/castillohair/isolearn@master
+genesis @ git+https://github.com/castillohair/genesis@master
+Core-Fast-SeqProp @ git+https://github.com/castillohair/corefsp@master
