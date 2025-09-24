@@ -1,7 +1,5 @@
 # Model-based enhancer design scripts
 
-## Description and general usage
-
 The enhancer design scripts here reproduce the design tasks in our article. These include:
 
 - Design enhancers specific to **one biosample (i.e. cell type)** among [64 biosamples](./../data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) (uses Fast SeqProp), [`dhs64_single_den.py`](#dhs64_single_denpy) (uses DENs).
@@ -11,7 +9,7 @@ The enhancer design scripts here reproduce the design tasks in our article. Thes
 
 Along with our accessibility models, these scripts use [Fast SeqProp](https://doi.org/10.1186/s12859-021-04437-5) and [Deep Exploration Networks (DENs)](https://doi.org/10.1016/j.cels.2020.05.007) to optimize sequences.
 
-### Command-line interface
+## Command-line interface
 Scripts include a command-line interface which can generally be used as follows:
 
 ```shell
@@ -20,7 +18,7 @@ python {design_script}.py --target-idx {i} --n-seqs 100 --seq-length 145
 
 Where `{i}` corresponds to the index of the biosample to target. See each individual subsection below for a precise description of each script's interface.
 
-### Outputs
+## Outputs
 
 The output of each script is a directory with the following files:
 
@@ -38,7 +36,7 @@ The output of each script is a directory with the following files:
 
 `output-prefix` can be specified via a command-line argument, otherwise it defaults to `{target_idx}_{target_biosample_name}`. Some scripts create additional files as indicated below.
 
-### Code organization
+## Code organization
 
 These scripts can also be used as starting points for custom sequence design tasks. The code is organized as follows:
 
@@ -48,6 +46,8 @@ These scripts can also be used as starting points for custom sequence design tas
 4. **Entry point** which parses command-line arguments and runs the main design function.
 
 Note that most optimization-related arguments provided to Fast SeqProp and DEN are not currently exposed to the command-line API, and would need to be modified inside the code if needed.
+
+# Description of individual scripts
 
 ## `dhs64_single_fsp.py`
 
