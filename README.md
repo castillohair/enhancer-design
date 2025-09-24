@@ -30,7 +30,8 @@ Additional folders include:
 
 Individual folders contain their own README.md file with more specific instructions.
 
-## Usage
+
+## Use cases
 
 ### Using pre-designed synthetic enhancers
 
@@ -40,13 +41,13 @@ Note that a subset of DHS64-designed enhancers has been experimentally validated
 
 ### Designing new enhancers
 
-Reasons to generate new enhancers beyond the Atlas may include: 1) different lengths, 2) submaximal target activity, 3) targeting multiple cell types.
+Reasons to generate new enhancers beyond the Atlas may include: 1) different enhancer lengths, 2) submaximal target activity, 3) targeting multiple cell types.
 
 To design new enhancers, packages in the "Requirements" section below must be present, and the appropriate model weights should be downloaded into [`models`](./models/) using the included scripts. Then, the scripts included in the [`design`](./design/) folder can be run with the appropriate settings or modified as needed.
 
 In addition, we trained generative models called [Deep Exploration Networks](https://doi.org/10.1016/j.cels.2020.05.007) to target each of the DHS64-modeled samples. If the goal is to generate additional enhancers targeted to these samples, pre-trained DENs can be downloaded and used via included scripts.
 
-See the README.md file in the [`design`](./design/) folder for more information.
+See the [`design`](./design/) folder `README` for more information.
 
 ### Training models
 
@@ -54,13 +55,13 @@ See the README.md file in the [`design`](./design/) folder for more information.
 
 Model training can be performed via the `train.py` scripts included in the [`models/dhs64`](./models/dhs64/) and [`models/dhs733`](models/dhs733/) subfolders. These can be used to reproduce training of the models used in the article, as well as to train new models on additional data splits we did not originally use. See the [models](./models/) folder `README` file for more information.
 
-Processed DNase I Index data used for training can be downloaded via the included [`download_processed_data.sh`](./data/dhs_index/download_processed_data.sh) script in the [`data/dhs_index`](./data/dhs_index) folder. For more information see the [Data for training accessibility models](./data/README.md#data-for-training-accessibility-models) section in the `data` folder's `README` file.
+Processed DNase I Index data used for training can be downloaded via the included `download_processed_data.sh` script in the [`data/dhs_index`](./data/dhs_index) folder. For more information see the [Data for training accessibility models](./data/README.md#data-for-training-accessibility-models) section in the `data` folder `README`.
 
 #### Enhancer activity models
 
-Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can also be used to finetune on data splits not originally used in the article, and as a starting point to finetune on new MPRA measurements. See the [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) section in the `models` folder's `README` file.
+Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can also be used to finetune on data splits not originally used in the article, and as a starting point to finetune on new MPRA measurements. See the [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) section in the `models` folder `README`.
 
-Processed MPRA measurements used for finetuning can be downloaded via the [`download_mpra_results.sh`](./data/mpra/download_mpra_results.sh) script. Precalculated data split information is also necessary and can be downloaded with [`download_mpra_data_splits.sh`](./data/mpra/download_mpra_data_splits.sh). For more information, see the ["MPRA results"](./data/README.md#cell-line-and-mouse-retina-mpra-results) section in the `data` folder's `README` file.
+Processed MPRA measurements used for finetuning can be downloaded via the `download_mpra_results.sh` script. Precalculated data split information is also necessary and can be downloaded with `download_mpra_data_splits.sh`. For more information, see the ["MPRA results"](./data/README.md#cell-line-and-mouse-retina-mpra-results) section in the `data` folder `README`.
 
 <!---
 ### Reproduce publication analysis
@@ -68,10 +69,36 @@ Processed MPRA measurements used for finetuning can be downloaded via the [`down
 Each analysis included in [`analysis`](./analysis/) will have its own workflow and requirements. See the folder's README.md file for more information.
 -->
 
-<!---
 ## Requirements
-Coming soon.
--->
+
+Code was written in Python 3 (tested in 3.7-3.10). An included script `install_requirements.sh` should take care of dependencies.
+
+The following are specific notes about required packages and versions:
+
+- **Standard packages**: The following can be installed normally with most package managers:
+    - `biopython` (tested v1.79)
+    - `deeplift` (tested 0.6.13.0)
+    - `editdistance` (tested v0.6.0)
+    - `logomaker` (tested 0.8)
+    - `matplotlib` (tested v3.5.1)
+    - `numpy` (tested v1.26.4)
+    - `pandas` (tested v1.4.3)
+    - `prtpy` (tested v0.8.2)
+    - `scipy` (tested v1.12.0)
+    - `seaborn` (tested v0.13.2)
+    - `tables` (tested v3.9.2).
+- **AI modeling packages**: All model-related code requires `tensorflow`,  Keras 2, and a compatible `tensorflow-probability`. The following version combinations have been tested:
+    - `tensorflow` 2.7, `tensorflow-probability` 0.15.0
+    - `tensorflow` 2.10, `tensorflow-probability` 0.15.0
+    - `tensorflow` 2.14, `tensorflow-probability` 0.22.1
+
+    If using other versions, note that starting with v2.16, `tensorflow` works with Keras 3 by default and may not work out of the box with this repository. Additionally, compatibility between `tensorflow` and `tensorflow-probability` should be verified at https://github.com/tensorflow/probability/releases.
+
+- **Custom/modified packages for AI sequence design and interpretation**: The following need to be downloaded from the linked github repositories and installed manually:
+    - [`isolearn`](https://github.com/castillohair/isolearn)
+    - [`Fast SeqProp`](https://github.com/castillohair/corefsp)
+    - [`DEN`](https://github.com/castillohair/genesis)
+    - [`SHAP`](https://github.com/castillohair/shap)
 
 ## Citation
 
