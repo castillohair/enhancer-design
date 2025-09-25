@@ -8,59 +8,67 @@ This repository is part of the following article: Castillo-Hair et al. *Programm
 
 ## Contents
 
-This repository contains the following main components:
+The following main components are part of this project:
 
-- **Sequence-to-function predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictor classes, each with three individual models independently trained on different chromosome-based data splits:
+- **Sequence-to-function predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictor classes:
     
-    - **DHS64**: *chromatin accessibility* predictor trained on a [subset of 64 samples](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) in the DNase I Index, selected to represent a wide variety of tissues and cell types.
-    - **DHS733**: *chromatin accessibility* predictor trained on all 733 DNase I Index samples.
-    - **DH64-MPRA**: *enhancer activity* predictor, developed by finetuning DHS64 models on MPRA data from 12 cell lines collected by us.
+    - **DHS64**: predicts *chromatin accessibility* across [64 cell and tissue types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) selected from the DNase I Index.
+    - **DHS733**: predicts *chromatin accessibility* across [all 733 samples from the DNase I Index](https://doi.org/10.1038/s41586-020-2559-3), including tissues, cell types, and states.
+    - **DH64-MPRA**: predicts *enhancer activity* in 12 human cell lines. Developed by finetuning DHS64 models on activity measurements of ~9,000 enhancers collected by us via Massively Parallel Reporter Assays (MPRAs).
+
+    For each of these, we use three individual models independently trained on different data splits.
     
-- **Enhancer design code**. The folder [`design`](./design/) contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use updated versions of **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [github](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [github](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple cell types, with maximal or tunable activites.
+- **Enhancer design code**. The folder [`design`](./design/) contains code to generate synthetic enhancers using DHS64 or DHS733 as oracles. We use  **Fast SeqProp** ([paper](https://doi.org/10.1186/s12859-021-04437-5), [repo](https://github.com/castillohair/corefsp/)) and **Deep Exploration Networks** ([paper](https://doi.org/10.1016/j.cels.2020.05.007), [repo](https://github.com/castillohair/genesis/)) to optimize sequences. We include code to generate enhancers specific to one or multiple cell types, with maximal or tunable activites.
 
 <!---
 - **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and natural controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
 -->
 
-- **Atlas of human synthetic enhancers**. We include two repositories of synthetic enhancers designed with [DHS64]() (~32k, 500 per target) or [DHS733]() (~52.2k, 200 per non-redundant target), respectively, targeting each of their modeled cell types, along with pre-computed predictions.
+- **Pre-designed "atlases" of synthetic enhancers**. We have designed enhancers specific to **every human tissue, cell type, and state** in the DNase I Index: ~32k designed with DHS64 (500 targeting each modeled sample) and ~52.2k designed with DHS733 (200 per unique sample). Due to their size, these atlases are not included with the files in this repository, but a download link will be available here soon.
 
-Additional folders include:
+Additional components include:
 - [`data`](./data): Data necessary for model training and analysis.
-- [`src`](./src): python code used across the repository.
+- [`src`](./src): Python code used across the repository.
 
-Individual folders contain their own README.md file with more specific information.
+Most folders contain their own `README.md` file with more specific information.
 
 ## Use cases
 
 ### Using pre-designed synthetic enhancers
 
-Synthetic enhancers can be extracted from the included Atlas without running any code. In general, you will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) and [DHS733](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx) modeled samples, and then find relevant enhancers in the Atlas files.
+*Download link to enhancer atlas files will be available here soon!*
 
-Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. We recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an experimentally characterized enhancer with the desired activity can be found.
+Thousands of ready-to-use synthetic enhancer sequences targeting every sample in the DNase I Index have been generated in this project. In general, a user will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) and [DHS733](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx) modeled samples, and find corresponding enhancers in the Atlas files.
+
+Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. We recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an experimentally characterized enhancer with the desired activity can be found. Instructions on how to download and read enhancer activity measurements can be found [here](./data/README.md#cell-line-and-mouse-retina-mpra-results).
 
 ### Designing new enhancers
 
 Reasons to generate new enhancers beyond the Atlas may include: 1) different enhancer lengths, 2) submaximal target activity, 3) targeting multiple cell types.
 
-To design new enhancers, install the [required packages](#requirements) and download the appropriate model weights into [`models`](./models/) using the included `download_model_weights.py` script. Then, scripts included in the [`design`](./design/) folder can be run with the appropriate settings or modified as needed.
+To generate new enhancers, install the [required packages](#requirements) and download the appropriate model weights into the [`models`](./models/) folder using the included `download_model_weights.py` script. Then, run the scripts in the [`design`](./design/) folder with the appropriate settings, or modify them as needed.
 
 In addition, we trained generative models called [Deep Exploration Networks](https://doi.org/10.1016/j.cels.2020.05.007) to target each of the DHS64-modeled samples. If the goal is to generate additional enhancers targeted to these samples, pre-trained DENs can be downloaded and used via included scripts.
 
-See the [`design`](./design/) folder `README` for more information.
+See the [`design`](./design/) folder's `README` for more information.
 
-### Training models
+### Finetuning accessibility models on enhancer activity data
+
+Our code for finetuning DHS64 models on MRPA data can be found in `finetune.py` inside the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can be used as a starting point to finetune on new enhancer measurements. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information. Make sure to install the [required packages](#requirements) beforehand.
+
+### Reproduce model training
 
 #### Chromatin accessibility models
 
-Model training can be performed via the `train.py` scripts included in the [`models/dhs64`](./models/dhs64/) and [`models/dhs733`](models/dhs733/) subfolders. These can be used to reproduce training of the models used in the article, as well as to train new models on additional data splits we did not originally use. See the [models](./models/) folder `README` file for more information.
+Model training can be performed via the `train.py` scripts included in the [`models/dhs64`](./models/dhs64/) and [`models/dhs733`](models/dhs733/) subfolders. These can be used to reproduce training of the models used in the article, as well as to train new models on additional data splits we did not originally use. See the [models](./models/) folder's `README` file for more information.
 
-Processed DNase I Index data used for training can be downloaded via the included `download_data.py` script in the [`data`](./data) folder. More information can be found [here](./data/README.md#data-for-training-accessibility-models).
+Training data, consisting of processed DNase I Index information, can be downloaded via the included `download_data.py` script in the [`data`](./data) folder. More information can be found in the `data` folder's [README](./data/README.md#data-for-training-accessibility-models) file.
 
 #### Enhancer activity models
 
-Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can also be used to finetune on data splits not originally used in the article, and as a starting point to finetune on new MPRA measurements. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information.
+Finetuning of the DHS64-MPRA enhancer activity model can be reproduced via the `finetune.py` script in the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder, and finetuning on additional data splits can also be performed. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information.
 
-Processed MPRA measurements used for finetuning can be downloaded via the `download_data.py` script in the [`data`](./data/) folder. Necessary data split information will also be downloaded. More information can be found [here](./data/README.md#cell-line-and-mouse-retina-mpra-results).
+Processed MPRA measurements used for finetuning can be downloaded via the `download_data.py` script in the [`data`](./data/) folder. Necessary information on train/validation/test data splits will also be downloaded. More information can be found in the `data` folder's [README](./data/README.md#cell-line-and-mouse-retina-mpra-results) file.
 
 <!---
 ### Reproduce publication analysis
@@ -70,24 +78,7 @@ Each analysis included in [`analysis`](./analysis/) will have its own workflow a
 
 ## Requirements
 
-Code was written in Python 3 (tested in 3.7-3.10). Dependencies can be installed via `pip install -r requirements.txt`.
-
-Notes about special requirements:
-
-- **AI modeling packages**: All model-related code requires `tensorflow`,  Keras 2, and a compatible `tensorflow-probability`. The following version combinations have been tested:
-    - `tensorflow` 2.7, `tensorflow-probability` 0.15.0
-    - `tensorflow` 2.10, `tensorflow-probability` 0.15.0
-    - `tensorflow` 2.14, `tensorflow-probability` 0.22.1
-
-    These require `numpy` 1.x.
-    
-    If using other `tensorflow` versions, note that starting with v2.16, Keras 3 is included by default which may not work out of the box with this repository. Additionally, compatibility between `tensorflow` and `tensorflow-probability` should be verified at https://github.com/tensorflow/probability/releases.
-
-- **Custom/modified packages for AI sequence design and interpretation**: The following should be installed from the linked repositories:
-    - [`Fast SeqProp`](https://github.com/castillohair/corefsp): re-implemented compared to the original publication.
-    - [`isolearn`](https://github.com/castillohair/isolearn): required by DEN, modified to work with tensorflow 2.
-    - [`DEN`](https://github.com/castillohair/genesis): modified to work with tensorflow 2.
-    - [`SHAP`](https://github.com/castillohair/shap): added modifications originally introduced by the Kundaje lab into a more recent SHAP version that works with tensorflow 2.
+Code was written in Python 3. Dependencies can be installed via `pip install -r requirements.txt`. Some notes on required packages can be found inside the same file.
 
 ## Citation
 
