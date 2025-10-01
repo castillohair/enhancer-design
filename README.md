@@ -2,17 +2,15 @@
 
 ![plot](./readme_fig.png)
 
-**Design synthetic enhancers with activity specific to the hundreds of human cell types, tissues, and differentiation states.** Our method uses AI predictors of chromatin accessibility trained on the [DNase I Index dataset](https://doi.org/10.1038/s41586-020-2559-3). The list of potential enhancer targets can be found [here](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx).
-
-This repository is part of the following article: Castillo-Hair et al. *Programming human cell type-specific gene expression via an atlas of AI-designed enhancers* (link coming soon).
+**Design synthetic enhancers with activity specific to the hundreds of human cell types, tissues, and differentiation states.** This repository contains code associated with the article [Castillo-Hair et al. *Programming human cell type-specific gene expression via an atlas of AI-designed enhancers*](https://doi.org/10.1101/2025.09.30.679565). We design synthetic enhancers using AI predictors of chromatin accessibility trained on the [DNase I Index dataset](https://doi.org/10.1038/s41586-020-2559-3). The list of potential enhancer targets can be found [here](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx).
 
 ## Contents
 
 The following main components are part of this project:
 
-- **Sequence-to-function predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictor classes:
+- **Sequence-to-function AI predictors**. The folder [`models`](./models) contains code to train predictors and to download pretrained weights. We use three predictors:
     
-    - **DHS64**: predicts *chromatin accessibility* across [64 cell and tissue types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) selected from the DNase I Index.
+    - **DHS64**: predicts *chromatin accessibility* across a subset of [64 cell and tissue types](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) selected from the DNase I Index.
     - **DHS733**: predicts *chromatin accessibility* across [all 733 samples from the DNase I Index](https://doi.org/10.1038/s41586-020-2559-3), including tissues, cell types, and states.
     - **DH64-MPRA**: predicts *enhancer activity* in 12 human cell lines. Developed by finetuning DHS64 models on activity measurements of ~9,000 enhancers collected by us via Massively Parallel Reporter Assays (MPRAs).
 
@@ -24,7 +22,7 @@ The following main components are part of this project:
 - **Analysis of experimental validation results**. We characterized the performance of ~9,000 enhancers, including synthetic ones and natural controls, via MPRAs in 10 target cell lines. The folder [`analysis`](./analysis/) contains code to analyze those results and generate figures in our publication.
 -->
 
-- **Pre-designed "atlases" of synthetic enhancers**. We have designed enhancers specific to **every human tissue, cell type, and state** in the DNase I Index: ~32k designed with DHS64 (500 targeting each modeled sample) and ~52.2k designed with DHS733 (200 per unique sample). Due to their size, these atlases are not included with the files in this repository, but a download link will be available here soon.
+- **Pre-designed "atlases" of synthetic enhancers**. We have designed enhancers specific to **every human tissue, cell type, and state** in the DNase I Index: [~32k designed with DHS64 (500 targeting each modeled sample)](https://www.biorxiv.org/content/biorxiv/early/2025/09/30/2025.09.30.679565/DC6/embed/media-6.xlsx?download=true) and [~52.2k designed with DHS733 (200 per non-redundant sample)](https://www.biorxiv.org/content/biorxiv/early/2025/09/30/2025.09.30.679565/DC13/embed/media-13.xlsx?download=true). Use these links to download enhancer atlases along with their predicted activities.
 
 Additional components include:
 - [`data`](./data): Data necessary for model training and analysis.
@@ -36,11 +34,9 @@ Most folders contain their own `README.md` file with more specific information.
 
 ### Using pre-designed synthetic enhancers
 
-*Download link to enhancer atlas files will be available here soon!*
+Thousands of ready-to-use synthetic enhancer sequences have been generated as part of this project, with specificity towards [64 selected cell types and tissues captured by our initial model DHS64](https://www.biorxiv.org/content/biorxiv/early/2025/09/30/2025.09.30.679565/DC6/embed/media-6.xlsx?download=true), and later targeting [every non-redundant sample in the DNase I Index](https://www.biorxiv.org/content/biorxiv/early/2025/09/30/2025.09.30.679565/DC13/embed/media-13.xlsx?download=true). In general, a user will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) and [DHS733](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx) modeled samples, find corresponding enhancers in the Atlas files, and verify that predicted activity is adequate.
 
-Thousands of ready-to-use synthetic enhancer sequences targeting every sample in the DNase I Index have been generated in this project. In general, a user will need to search for a cell type / tissue / cell state that most closely represents the desired target within the [DHS64](./data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) and [DHS733](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx) modeled samples, and find corresponding enhancers in the Atlas files.
-
-Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. We recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an experimentally characterized enhancer with the desired activity can be found. Instructions on how to download and read enhancer activity measurements can be found [here](./data/README.md#cell-line-and-mouse-retina-mpra-results).
+Note that a subset of DHS64-designed enhancers has been experimentally validated in cell lines and mouse retina in our publication. Experimental results can be downloaded [here](https://www.biorxiv.org/content/biorxiv/early/2025/09/30/2025.09.30.679565/DC10/embed/media-10.xlsx?download=true). We recommend preferentially using these if the cell type of interest can be adequately represented by any of these cell lines, and an experimentally characterized enhancer with the desired activity can be found.
 
 ### Designing new enhancers
 
@@ -79,9 +75,3 @@ Each analysis included in [`analysis`](./analysis/) will have its own workflow a
 ## Requirements
 
 Code was written in Python 3. Dependencies can be installed via `pip install -r requirements.txt`. Some notes on required packages can be found inside the same file.
-
-## Citation
-
-If you use any of the contents of this repository, please cite the following:
-
-Sebastian M. Castillo-Hair, Christopher H. Yin, Leah VandenBosch, Timothy J. Cherry, Wouter Meuleman, Georg Seelig. *Programming human cell type-specific gene expression via an atlas of AI-designed enhancers*.
