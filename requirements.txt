@@ -1,21 +1,3 @@
-# Notes about requirements
-##########################
-#
-# - AI modeling packages: This repository requires `tensorflow`,  Keras 2, and a compatible `tensorflow-probability`. The following version combinations have been tested:
-#   - `tensorflow` 2.7, `tensorflow-probability` 0.15.0
-#   - `tensorflow` 2.10, `tensorflow-probability` 0.15.0
-#   - `tensorflow` 2.14, `tensorflow-probability` 0.22.1
-#   This file specifies the latter combination. All of these require `numpy` 1.x.
-#   If using other `tensorflow` versions, note that starting with v2.16, Keras 3 is included by default which may not work out of the box with this repository. Additionally, compatibility between `tensorflow` and `tensorflow-probability` versions should be verified at https://github.com/tensorflow/probability/releases.
-#
-# - Custom/modified packages for AI sequence design and interpretation: The following are installed directly from github repositories:
-#     - [`Fast SeqProp`](https://github.com/castillohair/corefsp): re-implemented compared to the original publication.
-#     - [`isolearn`](https://github.com/castillohair/isolearn): required by DEN, modified to work with tensorflow 2.
-#     - [`DEN`](https://github.com/castillohair/genesis): modified to work with tensorflow 2.
-#     - [`SHAP`](https://github.com/castillohair/shap): added modifications originally introduced by the Kundaje lab into a more recent SHAP version that works with tensorflow 2.
-#
-####################################
-
 numpy<2.0
 scipy
 openpyxl

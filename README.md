@@ -74,4 +74,51 @@ Each analysis included in [`analysis`](./analysis/) will have its own workflow a
 
 ## Requirements
 
-Code was written in Python 3. Dependencies can be installed via `pip install -r requirements.txt`. Some notes on required packages can be found inside the same file.
+### Hardware requirements
+The software in this package can be run on a standard computer, however model training and sequence design will greatly benefit from GPUs. Additional requirements (e.g. memory needed to handle some of the large data files) are noted alongside each script and notebook.
+
+### Software requirements
+
+#### OS requirements
+This package has been tested on Windows 11 and Amazon Linux 2. However, most versions of Linux and macOS are expected to be compatible if package requirements are met (see below).
+
+#### Python dependencies
+This repo uses Python 3. Required packages can be installed via `requirements.txt`. These requirements fall into three categories:
+
+- Standard packages:
+  - `numpy<2.0`
+  - `scipy`
+  - `openpyxl`
+  - `pandas`
+  - `matplotlib`
+  - `seaborn`
+  - `biopython`
+  - `deeplift`
+  - `editdistance`
+  - `logomaker`
+  - `prtpy`
+  - `tables`
+- AI modeling packages: This repository requires `tensorflow`,  Keras 2, and a compatible `tensorflow-probability`. The following version combinations have been tested:
+  - `tensorflow` 2.7, `tensorflow-probability` 0.15.0
+  - `tensorflow` 2.10, `tensorflow-probability` 0.15.0
+  - `tensorflow` 2.14, `tensorflow-probability` 0.22.1
+  
+  `requirements.txt` specifies the latter combination. All of these require `numpy` 1.x.
+  
+  If using other `tensorflow` versions, note that starting with v2.16, Keras 3 is included by default which may not work out of the box with this repository. Additionally, compatibility between `tensorflow` and `tensorflow-probability` versions should be verified at https://github.com/tensorflow/probability/releases.
+- Custom/modified packages for AI sequence design and interpretation: The following are installed directly from github repositories:
+  - [`Fast SeqProp`](https://github.com/castillohair/corefsp): re-implemented compared to the original publication.
+  - [`isolearn`](https://github.com/castillohair/isolearn): required by DEN, modified to work with tensorflow 2.
+  - [`DEN`](https://github.com/castillohair/genesis): modified to work with tensorflow 2.
+  - [`SHAP`](https://github.com/castillohair/shap): added modifications originally introduced by the Kundaje lab into a more recent SHAP version that works with tensorflow 2.
+
+## Installation guide
+To download the repository and install requirements run the following:
+
+```
+git clone https://github.com/castillohair/enhancer-design
+cd enhancer-design
+pip install -r requirements.txt
+```
+
+Then, refer to each individual folder to run scripts for data download, model training, sequence design, and analysis.
