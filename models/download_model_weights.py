@@ -25,33 +25,33 @@ if __name__ == "__main__":
     # DHS64 model weights
     #####################
     url_dest_list = [
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64/dhs64_data_split_0.h5"),
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64/dhs64_data_split_1.h5"),
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64/dhs64_data_split_3.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_data_split_0.h5?download=1", "dhs64/dhs64_data_split_0.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_data_split_1.h5?download=1", "dhs64/dhs64_data_split_1.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_data_split_3.h5?download=1", "dhs64/dhs64_data_split_3.h5"),
     ]
     ask_and_download("Download DHS64 model weights?", url_dest_list)
 
     # DHS64 no-filter model weights
     ###############################
     url_dest_list = [
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64/dhs64_nofilt_data_split_3.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_nofilt_data_split_3.h5?download=1", "dhs64/dhs64_nofilt_data_split_3.h5"),
     ]
     ask_and_download("Download weights of DHS64 model trained on unfiltered DHS data?", url_dest_list)
 
     # DHS64-MPRA model weights
     ##########################
     url_dest_list = [
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64_mpra/dhs64_mpra_data_split_0.h5"),
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64_mpra/dhs64_mpra_data_split_1.h5"),
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs64_mpra/dhs64_mpra_data_split_3.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_mpra_data_split_0.h5?download=1", "dhs64_mpra/dhs64_mpra_data_split_0.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_mpra_data_split_1.h5?download=1", "dhs64_mpra/dhs64_mpra_data_split_1.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs64_mpra_data_split_3.h5?download=1", "dhs64_mpra/dhs64_mpra_data_split_3.h5"),
     ]
     ask_and_download("Download DHS64-MPRA model weights?", url_dest_list)
 
     # DHS733 model weights
     ######################
     url_dest_list = [
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs733/dhs733_data_split_0.h5"),
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs733/dhs733_data_split_1.h5"),
-        ("https://example-files.online-convert.com/document/txt/example.txt", "dhs733/dhs733_data_split_3.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs733_data_split_0.h5?download=1", "dhs733/dhs733_data_split_0.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs733_data_split_1.h5?download=1", "dhs733/dhs733_data_split_1.h5"),
+        ("https://zenodo.org/records/17410822/files/dhs733_data_split_3.h5?download=1", "dhs733/dhs733_data_split_3.h5"),
     ]
     ask_and_download("Download DHS733 model weights?", url_dest_list)
