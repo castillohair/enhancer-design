@@ -358,7 +358,7 @@ def make_model_ensemble(
         Index of the output to take the minimum across models. Default is None.
     avg_output_idx : int, optional
         Index of the output to take the average across models. Default is None.
-    input_seq_length : int, optional
+    padded_input_length : int, optional
         Length of the input sequence. If specified, input sequences will be padded
         with zeros to this length. Default is None, which uses the models' original
         input length.
@@ -401,6 +401,7 @@ def make_model_ensemble(
     # Construct padded input if necessary
     if padded_input_length is None:
         model_input = layers.Input(shape=(None, 4))
+        model_input_padded = model_input
     else:
         input_padding_layer = layers.Lambda(
             lambda x: tensorflow.pad(
@@ -412,9 +413,10 @@ def make_model_ensemble(
         )
 
         model_input = layers.Input(shape=(padded_input_length, 4))
+        model_input_padded = input_padding_layer(model_input)
 
     # Outputs of individual models
-    models_individual_output = [m(input_padding_layer(model_input)) for m in models_list]
+    models_individual_output = [m(model_input_padded) for m in models_list]
     
     # Select outputs
     mask_min = numpy.zeros((1, n_outputs))
