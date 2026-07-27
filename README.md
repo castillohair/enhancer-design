@@ -100,7 +100,7 @@ This repo uses Python 3. Required packages can be installed via `requirements.tx
   - `tables`
 - AI modeling packages: This repository requires `tensorflow`,  Keras 2, and a compatible `tensorflow-probability`. The following version combinations have been tested:
   - `tensorflow` 2.7, `tensorflow-probability` 0.15.0
-  - `tensorflow` 2.10, `tensorflow-probability` 0.15.0
+  - `tensorflow` 2.10, `tensorflow-probability` 0.18.0
   - `tensorflow` 2.14, `tensorflow-probability` 0.22.1
   
   `requirements.txt` specifies the latter combination. All of these require `numpy` 1.x.
