@@ -1,0 +1,57 @@
+[project]
+name = "enhancer-design"
+version = "0.1.0"
+description = "Design synthetic human cell type-specific enhancers"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "biopython>=1.86",
+    "deeplift>=0.6.13",
+    "editdistance>=0.8.1",
+    "logomaker>=0.8.7",
+    "matplotlib>=3.10.8",
+    "numpy==1.26.4",
+    "openpyxl>=3.1.5",
+    "pandas>=2.3.3",
+    "prtpy>=0.8.3",
+    "requests>=2.32",
+    "scikit-learn>=1.8.0",
+    "scipy>=1.17.0",
+    "seaborn>=0.13.2",
+    "tables>=3.10.2",
+    "tensorflow==2.14",
+    "tensorflow-macos==2.14 ; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "tensorflow-probability==0.22.1",
+    "core-fast-seqprop",
+    "genesis",
+    "isolearn",
+    "shap",
+    # CUDA 11.8 runtime for TensorFlow 2.14, independent of the CUDA version
+    # installed on the host. Linux x86_64 only.
+    "nvidia-cublas-cu11==11.11.3.6 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cuda-cupti-cu11==11.8.87 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cuda-nvcc-cu11==11.8.89 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cuda-runtime-cu11==11.8.89 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cudnn-cu11==8.7.0.84 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cufft-cu11==10.9.0.58 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-curand-cu11==10.3.0.86 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cusolver-cu11==11.4.1.48 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-cusparse-cu11==11.7.5.86 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    "nvidia-nccl-cu11==2.16.5 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.0",
+    "jupyter>=1.1.1",
+]
+
+[tool.uv]
+# Scripts reach shared code via sys.path, so nothing is installed as a package.
+package = false
+
+[tool.uv.sources]
+core-fast-seqprop = { git = "https://github.com/castillohair/corefsp" }
+genesis = { git = "https://github.com/castillohair/genesis" }
+isolearn = { git = "https://github.com/castillohair/isolearn" }
+shap = { git = "https://github.com/castillohair/shap", branch = "castillohair/genomics_mod" }

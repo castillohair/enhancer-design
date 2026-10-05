@@ -19,3 +19,8 @@
 
 # Ignore all .h5 model files inside subdirectories of the models directory
 /models/*/*.h5
+# Virtual environment
+.venv/
+
+# macOS
+.DS_Store
