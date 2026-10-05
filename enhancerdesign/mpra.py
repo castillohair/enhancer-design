@@ -11,7 +11,7 @@ def load_data(
 
     Parameters
     ----------
-    file_path : str, optional
+    file_path : str or pathlib.Path, optional
         Path to the TSV file containing MPRA data.
     split_multitarget : bool, optional
         Whether to split values in the 'target' column into tuples if they

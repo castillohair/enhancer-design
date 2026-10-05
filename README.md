@@ -26,7 +26,7 @@ The following main components are part of this project:
 
 Additional components include:
 - [`data`](./data): Data necessary for model training and analysis.
-- [`src`](./src): Python code used across the repository.
+- [`enhancerdesign`](./enhancerdesign): Python package with code used across the repository.
 
 Most folders contain their own `README.md` file with more specific information.
 
@@ -103,14 +103,14 @@ uv sync
 source .venv/bin/activate
 ```
 
-`uv sync` installs the exact versions recorded in `uv.lock`, and pulls the GPU-enabled dependencies only on Linux x86_64.
+`uv sync` installs the exact versions recorded in `uv.lock`, and pulls the GPU-enabled dependencies only on Linux x86_64. It also installs this repository's shared code as the `enhancerdesign` package in editable mode.
 
-Alternatively, install into an existing Python 3.11 environment with:
+Alternatively, install into an existing Python 3.11 environment by running the following from the repository root:
 
 ```
 pip install -r requirements.txt
 ```
 
-`requirements.txt` was generated from `uv.lock` and carries the same pinned versions.
+`requirements.txt` was generated from `uv.lock` and carries the same pinned versions. It also installs `enhancerdesign` in editable mode.
 
 Then, refer to each individual folder to run scripts for data download, model training, sequence design, and analysis.

@@ -1,49 +1,54 @@
+from pathlib import Path as _Path
+
+# Repository root, so paths do not depend on the working directory
+REPO_ROOT = _Path(__file__).resolve().parents[1]
+
 # Definitions of the DHS Index dataset
 ######################################
 DHS_INDEX_N_BIOSAMPLES = 733
-DHS_INDEX_BIOSAMPLE_META_PATH = "data/dhs_index/raw/DHS_Index_and_Vocabulary_metadata.tsv"
+DHS_INDEX_BIOSAMPLE_META_PATH = REPO_ROOT / "data/dhs_index/raw/DHS_Index_and_Vocabulary_metadata.tsv"
 
 # Definitions relevant to all models
 ####################################
 MODEL_INPUT_LENGTH = 500
 
-DATA_SPLITS_CHRS_PATH = "data/dhs_index/data_splits_chrs.json"
-DATA_SPLITS_DHS_IDX_PATH = "data/dhs_index/data_splits_dhs_idx.h5"
+DATA_SPLITS_CHRS_PATH = REPO_ROOT / "data/dhs_index/data_splits_chrs.json"
+DATA_SPLITS_DHS_IDX_PATH = REPO_ROOT / "data/dhs_index/data_splits_dhs_idx.h5"
 
 # DHS64 definitions
 ###################
-DHS64_TRAIN_DATA_DIR = "data/dhs_index/dhs64_training"
-DHS64_TRAIN_DATA_PATH = f"{DHS64_TRAIN_DATA_DIR}/dhs_metadata_logsignal_binary.csv.gz"
-DHS64_TRAIN_META_PATH = f"{DHS64_TRAIN_DATA_DIR}/selected_biosample_metadata.tsv"
+DHS64_TRAIN_DATA_DIR = REPO_ROOT / "data/dhs_index/dhs64_training"
+DHS64_TRAIN_DATA_PATH = DHS64_TRAIN_DATA_DIR / "dhs_metadata_logsignal_binary.csv.gz"
+DHS64_TRAIN_META_PATH = DHS64_TRAIN_DATA_DIR / "selected_biosample_metadata.tsv"
 
-DHS64_BIOSAMPLE_META_PATH = "data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx"
+DHS64_BIOSAMPLE_META_PATH = REPO_ROOT / "data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx"
 DHS64_MODEL_PATH = {
-    0: "models/dhs64/dhs64_data_split_0.h5",
-    1: "models/dhs64/dhs64_data_split_1.h5",
-    3: "models/dhs64/dhs64_data_split_3.h5",
+    0: REPO_ROOT / "models/dhs64/dhs64_data_split_0.h5",
+    1: REPO_ROOT / "models/dhs64/dhs64_data_split_1.h5",
+    3: REPO_ROOT / "models/dhs64/dhs64_data_split_3.h5",
 }
 DHS64_INPUT_LENGTH = MODEL_INPUT_LENGTH
 DHS64_N_BIOSAMPLES = 64
 
 # DHS733 definitions
 ####################
-DHS733_TRAIN_DATA_DIR = "data/dhs_index/dhs733_training"
-DHS733_TRAIN_ONEHOT_SEQS_PATH = f"{DHS733_TRAIN_DATA_DIR}/dhs_seqs_onehot.h5"
-DHS733_TRAIN_LOGSIGNAL_PATH = f"{DHS733_TRAIN_DATA_DIR}/dhs_metadata_logsignal.h5"
+DHS733_TRAIN_DATA_DIR = REPO_ROOT / "data/dhs_index/dhs733_training"
+DHS733_TRAIN_ONEHOT_SEQS_PATH = DHS733_TRAIN_DATA_DIR / "dhs_seqs_onehot.h5"
+DHS733_TRAIN_LOGSIGNAL_PATH = DHS733_TRAIN_DATA_DIR / "dhs_metadata_logsignal.h5"
 
 DHS733_BIOSAMPLE_META_PATH = DHS_INDEX_BIOSAMPLE_META_PATH
 DHS733_MODEL_PATH = {
-    0: "models/dhs733/dhs733_data_split_0.h5",
-    1: "models/dhs733/dhs733_data_split_1.h5",
-    3: "models/dhs733/dhs733_data_split_3.h5",
+    0: REPO_ROOT / "models/dhs733/dhs733_data_split_0.h5",
+    1: REPO_ROOT / "models/dhs733/dhs733_data_split_1.h5",
+    3: REPO_ROOT / "models/dhs733/dhs733_data_split_3.h5",
 }
 DHS733_INPUT_LENGTH = MODEL_INPUT_LENGTH
 DHS733_N_BIOSAMPLES = 733
 
 # MPRA definitions
 ##################
-MPRA_DATA_PATH = "data/mpra/enhancer_mpra_processed.tsv"
-MPRA_DATA_SPLITS_IDX_PATH = "data/mpra/mpra_data_splits.json"
+MPRA_DATA_PATH = REPO_ROOT / "data/mpra/enhancer_mpra_processed.tsv"
+MPRA_DATA_SPLITS_IDX_PATH = REPO_ROOT / "data/mpra/mpra_data_splits.json"
 MPRA_CELL_LINES = [
     'NT2_D1', 'GM12878', '786_O', 'SKNSH', 'WERI_Rb1', 'SJCRH30', 'HepG2', 'K562', 'MCF7', 'HeLaS3', "HEK293", "HMC3",
 ]
@@ -89,7 +94,7 @@ MPRA_TARGETS_SORTED_LOG2FC_COLS = [f"log2FC_{ct}" for ct in MPRA_TARGETS_SORTED]
 # DHS64-MPRA model definitions
 ##############################
 DHS64_MPRA_MODEL_PATH = {
-    0: "models/dhs64_mpra/dhs64_mpra_data_split_0.h5",
-    1: "models/dhs64_mpra/dhs64_mpra_data_split_1.h5",
-    3: "models/dhs64_mpra/dhs64_mpra_data_split_3.h5",
+    0: REPO_ROOT / "models/dhs64_mpra/dhs64_mpra_data_split_0.h5",
+    1: REPO_ROOT / "models/dhs64_mpra/dhs64_mpra_data_split_1.h5",
+    3: REPO_ROOT / "models/dhs64_mpra/dhs64_mpra_data_split_3.h5",
 }

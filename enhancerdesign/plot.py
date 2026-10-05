@@ -15,7 +15,7 @@ NT_COLOR_DICT = {
     'T': (228/255, 38/255, 56/255),
 }
 
-def plot_sequence_bitmap(seq_vals, ax=None, legend=True):
+def sequence_bitmap(seq_vals, ax=None, legend=True):
     """
     Plot a list of sequences as a colormap, with each sequence in its own row.
 
@@ -79,7 +79,7 @@ def plot_sequence_bitmap(seq_vals, ax=None, legend=True):
 
     return ax
 
-def plot_seq_logo(nt_height=None, pwm=None, seq=None, font_name='DejaVu Sans Mono', ax=None, title=None):
+def sequence_logo(nt_height=None, pwm=None, seq=None, font_name='DejaVu Sans Mono', ax=None, title=None):
     """
     Plot a sequence logo
     
@@ -150,7 +150,7 @@ def plot_seq_logo(nt_height=None, pwm=None, seq=None, font_name='DejaVu Sans Mon
 
     return ax
 
-def plot_seq_logos(seq_vals, n_seqs=None):
+def sequence_logos(seq_vals, n_seqs=None):
     """
     Plot sequence logos for a list of sequences.
 
@@ -176,8 +176,8 @@ def plot_seq_logos(seq_vals, n_seqs=None):
     fig, axes = pyplot.subplots(n_seqs, 1, figsize=(seq_len/10, 0.4*n_seqs))
     for seq_idx in range(n_seqs):
         if isinstance(seq_vals[seq_idx], str):
-            plot_seq_logo(seq=seq_vals[seq_idx], ax=axes[seq_idx])
+            sequence_logo(seq=seq_vals[seq_idx], ax=axes[seq_idx])
         else:
-            plot_seq_logo(nt_height=seq_vals[seq_idx], ax=axes[seq_idx])
+            sequence_logo(nt_height=seq_vals[seq_idx], ax=axes[seq_idx])
 
     return fig
