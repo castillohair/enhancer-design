@@ -1,8 +1,6 @@
 
-import tensorflow
 from tensorflow.keras.layers import Input, Dense, Lambda, BatchNormalization, Reshape, Conv2D, Conv2DTranspose
 from tensorflow.keras import backend as K
-from tensorflow.python.keras import backend as Kpy
 
 import genesis
 import genesis.generator
@@ -188,14 +186,21 @@ def make_generator(
     return [latent_input_1, latent_input_2], [policy_out_1, policy_out_2], []
 
 
-def load_generator(model_path):
+def load_generator(model_path, batch_size=32, n_samples=1):
     """
     Load a generator model from file.
 
+    The architecture is rebuilt with `make_generator` and only weights are read from
+    the file, so generators saved under other Python versions load correctly.
+
     Parameters
     ----------
-    model_path : str
+    model_path : str or pathlib.Path
         The path to the saved generator model.
+    batch_size : int
+        Batch size the generator was built with.
+    n_samples : int
+        Number of sequences sampled from each PWM.
 
     Returns
     -------
@@ -203,15 +208,20 @@ def load_generator(model_path):
         The loaded generator model.
 
     """
-    model = tensorflow.keras.models.load_model(
-        model_path,
-        compile=False,
-        custom_objects={
-            "K": K,
-            'Kpy': Kpy,
-            'mask_pwm': genesis.generator.mask_pwm,
-            'st_sampled_softmax': genesis.generator.st_sampled_softmax,
-        }
+    _, model = genesis.generator.build_generator(
+        batch_size=batch_size,
+        seq_length=SEQ_LENGTH,
+        load_generator_function=make_generator,
+        n_classes=1,
+        n_samples=n_samples,
+        sequence_templates=['N' * SEQ_LENGTH],
+        batch_normalize_pwm=False,
     )
+
+    # Use latent inputs as given rather than random values
+    for layer_name in ['lambda_rand_sequence_class', 'lambda_rand_input_1', 'lambda_rand_input_2']:
+        model.get_layer(layer_name).function = lambda inp: inp
+
+    model.load_weights(model_path)
 
     return model

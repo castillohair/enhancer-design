@@ -50,7 +50,7 @@ See the [`design`](./design/) folder's `README` for more information.
 
 ### Finetuning accessibility models on enhancer activity data
 
-Our code for finetuning DHS64 models on MRPA data can be found in `finetune.py` inside the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can be used as a starting point to finetune on new enhancer measurements. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information. Make sure to install the [required packages](#requirements) beforehand.
+Our code for finetuning DHS64 models on MPRA data can be found in `finetune.py` inside the [`models/dhs64_mpra`](./models/dhs64_mpra/) subfolder. This script can be used as a starting point to finetune on new enhancer measurements. See [DHS64-MPRA Finetuning](./models/README.md#dhs64-mpra-finetuning) for more information. Make sure to install the [required packages](#requirements) beforehand.
 
 ### Reproduce model training
 

@@ -6,6 +6,7 @@
 /data/**/*.csv
 /data/**/*.csv.gz
 /data/**/*.tsv
+!/data/dhs_index/dhs733_training/dhs733_nonredundant_biosample_metadata.tsv
 /data/**/*.tsv.gz
 /data/**/*.json
 /data/**/*.h5

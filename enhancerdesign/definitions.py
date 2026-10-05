@@ -45,6 +45,11 @@ DHS733_MODEL_PATH = {
 DHS733_INPUT_LENGTH = MODEL_INPUT_LENGTH
 DHS733_N_BIOSAMPLES = 733
 
+# Biosamples with the same name are averaged into a single non-redundant output
+DHS733_NONRED_N_BIOSAMPLES = 261
+DHS733_NONRED_BIOSAMPLE_META_PATH = DHS733_TRAIN_DATA_DIR / "dhs733_nonredundant_biosample_metadata.tsv"
+DHS733_NONRED_MATRIX_PATH = DHS733_TRAIN_DATA_DIR / "dhs733_nonredundant_transformation_matrix.npy"
+
 # MPRA definitions
 ##################
 MPRA_DATA_PATH = REPO_ROOT / "data/mpra/enhancer_mpra_processed.tsv"

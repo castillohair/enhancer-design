@@ -250,7 +250,7 @@ def load_model(model_path):
     
     Parameters
     ----------
-    model_path : str
+    model_path : str or pathlib.Path
         Path to the saved Keras model.
         
     Returns
@@ -302,7 +302,7 @@ def apply_output_transformation(model, output_transmat_filepath):
     ----------
     model : tensorflow.keras.Model
         Keras model whose outputs will be transformed.
-    output_transmat_filepath : str
+    output_transmat_filepath : str or pathlib.Path
         Path to a .npy file containing the output transformation matrix.
     
     Returns

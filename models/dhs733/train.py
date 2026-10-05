@@ -1,7 +1,5 @@
 import argparse
-import os
 import random
-import sys
 
 import numpy
 import pandas
@@ -9,15 +7,13 @@ import tables
 
 import tensorflow
 
-BASE_DIR = '../../'
-sys.path.append(BASE_DIR)
-import src.definitions
-import src.model
-import src.sequence
+import enhancerdesign.definitions
+import enhancerdesign.model
+import enhancerdesign.sequence
 
-DHS733_TRAIN_ONEHOT_SEQS_PATH = os.path.join(BASE_DIR, src.definitions.DHS733_TRAIN_ONEHOT_SEQS_PATH)
-DHS733_TRAIN_LOGSIGNAL_PATH = os.path.join(BASE_DIR, src.definitions.DHS733_TRAIN_LOGSIGNAL_PATH)
-DATA_SPLITS_DHS_IDX_PATH = os.path.join(BASE_DIR, src.definitions.DATA_SPLITS_DHS_IDX_PATH)
+DHS733_TRAIN_ONEHOT_SEQS_PATH = enhancerdesign.definitions.DHS733_TRAIN_ONEHOT_SEQS_PATH
+DHS733_TRAIN_LOGSIGNAL_PATH = enhancerdesign.definitions.DHS733_TRAIN_LOGSIGNAL_PATH
+DATA_SPLITS_DHS_IDX_PATH = enhancerdesign.definitions.DATA_SPLITS_DHS_IDX_PATH
 
 # Learning rate scheduler hyperparameters
 lrs = [2e-4, 2e-5, 2e-6]
@@ -60,8 +56,8 @@ class SeqGenerator(tensorflow.keras.utils.Sequence):
         self.randomize_rc = randomize_rc
         self.shuffle = shuffle
 
-        self.seq_oenehot_placeholder = numpy.zeros((batch_size, src.definitions.DHS733_INPUT_LENGTH, 4))
-        self.signal_placeholder = numpy.zeros((batch_size, src.definitions.DHS733_N_BIOSAMPLES))
+        self.seq_oenehot_placeholder = numpy.zeros((batch_size, enhancerdesign.definitions.DHS733_INPUT_LENGTH, 4))
+        self.signal_placeholder = numpy.zeros((batch_size, enhancerdesign.definitions.DHS733_N_BIOSAMPLES))
         
         self.on_epoch_end()
 
@@ -179,17 +175,17 @@ def train_model(
     
     # Make model
     if starting_model is not None:
-        model = src.model.load_model(f'{starting_model}.h5')
+        model = enhancerdesign.model.load_model(f'{starting_model}.h5')
     else:
-        model = src.model.make_resnet(
-            src.definitions.DHS733_INPUT_LENGTH,
+        model = enhancerdesign.model.make_resnet(
+            enhancerdesign.definitions.DHS733_INPUT_LENGTH,
             groups=4,
             blocks_per_group=3,
             filters=480,
             kernel_size=13,
             dilation_rates=[1, 2, 4, 8],
             first_conv_activation='relu',
-            n_outputs=src.definitions.DHS733_N_BIOSAMPLES,
+            n_outputs=enhancerdesign.definitions.DHS733_N_BIOSAMPLES,
             output_activation='linear',
         )
     
@@ -210,13 +206,13 @@ def train_model(
     )
 
     # Add custom loss function and compile
-    loss = src.model.MSE_Cosine_Loss(w_mse, w_cosine)
+    loss = enhancerdesign.model.MSE_Cosine_Loss(w_mse, w_cosine)
     adam = tensorflow.keras.optimizers.Adam(lrs[0])
     model.compile(loss=loss, optimizer=adam)
 
     # Callbacks: learning rate scheduler and checkpointing
     callbacks = [
-        src.model.SequentialLearningScheduler(lrs, patience=patience_r),
+        enhancerdesign.model.SequentialLearningScheduler(lrs, patience=patience_r),
         tensorflow.keras.callbacks.ModelCheckpoint(
             filepath=output_name + '_checkpoint_{epoch:02d}.h5',
             save_weights_only=False,

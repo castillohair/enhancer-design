@@ -4,7 +4,7 @@ The included scripts reproduce the enhancer design tasks in our article. These i
 
 - Design enhancers specific to **one biosample (i.e. tissue/cell type)** among [64 biosamples](https://raw.githubusercontent.com/castillohair/enhancer-design/main/data/dhs_index/dhs64_training/selected_biosample_metadata.xlsx) captured by our initial model, DHS64: [`dhs64_single_fsp.py`](#dhs64_single_fsppy) and [`dhs64_single_den.py`](#dhs64_single_denpy).
 - Design enhancers specific to **multiple biosamples** among those modeled by DHS64: [`dhs64_multiple_fsp.py`](#dhs64_multiple_fsppy).
-- Design enhancers specific to one DHS64-modeled biosample with **tunable target activity**: [`dhs64_single_tunable.py`](#dhs64_single_tunable_fsppy).
+- Design enhancers specific to one DHS64-modeled biosample with **tunable target activity**: [`dhs64_single_tunable_fsp.py`](#dhs64_single_tunable_fsppy).
 - Design enhancers specific to **any of the hundreds of biosamples in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**: [`dhs733_single_fsp.py`](#dhs733_single_fsppy).
 
 Along with our accessibility models, these scripts use [Fast SeqProp](https://doi.org/10.1186/s12859-021-04437-5) and [Deep Exploration Networks (DENs)](https://doi.org/10.1016/j.cels.2020.05.007) to optimize sequences.
@@ -205,7 +205,7 @@ for `{i}` including 6 (NT2_D1), 17 (GM12878), 19 (786_O), 30 (SKNSH), 31 (WERI_R
 
 Design enhancers for activity specific to **any biosample in the [DNase I Index](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-020-2559-3/MediaObjects/41586_2020_2559_MOESM3_ESM.xlsx)**, including **tissues**, **cell types**, and **cell states**. We only design for **non-redundant biosamples** (i.e. with unique biosample names) within the DNase I Index, resulting in **261 possible targets**. Uses Fast SeqProp.
 
-The notebook `dhs733_create_output_transformation_matrix.ipynb` analyzes redundant biosamples and creates a transformation matrix `dhs733_nonredundant_transformation_matrix.npy` used to average redundant DHS733 outputs during design. This notebook also creates the table `dhs733_nonredundant_biosample_metadata.tsv` which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
+The notebook [`dhs733_create_output_transformation_matrix.ipynb`](../data/dhs_index/dhs733_create_output_transformation_matrix.ipynb) analyzes redundant biosamples and creates a transformation matrix [`dhs733_nonredundant_transformation_matrix.npy`](../data/dhs_index/dhs733_training/dhs733_nonredundant_transformation_matrix.npy) used to average redundant DHS733 outputs during design. This notebook also creates the table [`dhs733_nonredundant_biosample_metadata.tsv`](../data/dhs_index/dhs733_training/dhs733_nonredundant_biosample_metadata.tsv) which contains the final list of 261 targets. `--target-idx` corresponds to the zero-indexed position of a biosample within this table.
 
 The script supports designing enhancers with different levels of stringency via the `--non-target-percentile` parameter, where a higher value may result in a more stringent enhancer at the cost of lower target activity. The optimal value will depend on the cell type / biosample of interest.
 
@@ -217,7 +217,7 @@ Run Fast SeqProp to generate sequences with biosample-specific activity using DH
 optional arguments:
   -h, --help            show this help message and exit
   --target-idx TARGET_IDX
-                        Target biosample index within non-redundant DHS733-modeled biosamples. See "dhs733_nonredundant_biosample_metadata.tsv" for a list of possible target biosamples.
+                        Target biosample index within non-redundant DHS733-modeled biosamples. See "data/dhs_index/dhs733_training/dhs733_nonredundant_biosample_metadata.tsv" for a list of possible target biosamples.
   --n-seqs N_SEQS       Number of sequences to generate.
   --seq-length SEQ_LENGTH
                         Length of sequences to generate.

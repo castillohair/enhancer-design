@@ -1,19 +1,15 @@
 import argparse
 import json
-import os
-import sys
 
 import tensorflow
 
-BASE_DIR = '../../'
-sys.path.append(BASE_DIR)
-import src.definitions
-import src.model
-import src.mpra
-import src.sequence
+import enhancerdesign.definitions
+import enhancerdesign.model
+import enhancerdesign.mpra
+import enhancerdesign.sequence
 
-MPRA_DATA_PATH = os.path.join(BASE_DIR, src.definitions.MPRA_DATA_PATH)
-MPRA_DATA_SPLITS_PATH = os.path.join(BASE_DIR, src.definitions.MPRA_DATA_SPLITS_IDX_PATH)
+MPRA_DATA_PATH = enhancerdesign.definitions.MPRA_DATA_PATH
+MPRA_DATA_SPLITS_PATH = enhancerdesign.definitions.MPRA_DATA_SPLITS_IDX_PATH
 
 # Hyperparameters
 # Stage 1: train new output layer
@@ -31,10 +27,7 @@ def finetune_model(
 ):
     # Make default pretrained model and output names
     if pretrained_model_path is None:
-        pretrained_model_path = os.path.join(
-            BASE_DIR,
-            src.definitions.DHS64_MODEL_PATH[data_split_idx],
-        )
+        pretrained_model_path = enhancerdesign.definitions.DHS64_MODEL_PATH[data_split_idx]
 
     if output_name is None:
         output_name = f"dhs64_mpra_data_split_{data_split_idx}"
@@ -52,7 +45,7 @@ def finetune_model(
     print('Loading and preprocessing data...')
 
     # Load MPRA data
-    mpra_df = src.mpra.load_data(MPRA_DATA_PATH)
+    mpra_df = enhancerdesign.mpra.load_data(MPRA_DATA_PATH)
 
     # Load data split info
     with open(MPRA_DATA_SPLITS_PATH) as f:
@@ -64,13 +57,13 @@ def finetune_model(
     mpra_valid_df = mpra_df.loc[data_split_info['val']]
     mpra_test_df = mpra_df.loc[data_split_info['test']]
 
-    x_train = src.sequence.one_hot_encode(mpra_train_df['sequence'].values, max_seq_len=src.definitions.MODEL_INPUT_LENGTH)
-    x_valid = src.sequence.one_hot_encode(mpra_valid_df['sequence'].values, max_seq_len=src.definitions.MODEL_INPUT_LENGTH)
-    x_test = src.sequence.one_hot_encode(mpra_test_df['sequence'].values, max_seq_len=src.definitions.MODEL_INPUT_LENGTH)
+    x_train = enhancerdesign.sequence.one_hot_encode(mpra_train_df['sequence'].values, max_seq_len=enhancerdesign.definitions.MODEL_INPUT_LENGTH)
+    x_valid = enhancerdesign.sequence.one_hot_encode(mpra_valid_df['sequence'].values, max_seq_len=enhancerdesign.definitions.MODEL_INPUT_LENGTH)
+    x_test = enhancerdesign.sequence.one_hot_encode(mpra_test_df['sequence'].values, max_seq_len=enhancerdesign.definitions.MODEL_INPUT_LENGTH)
 
-    y_train = mpra_train_df[src.definitions.MPRA_CELL_LINES_LOG2FC_COLS].values
-    y_valid = mpra_valid_df[src.definitions.MPRA_CELL_LINES_LOG2FC_COLS].values
-    y_test = mpra_test_df[src.definitions.MPRA_CELL_LINES_LOG2FC_COLS].values
+    y_train = mpra_train_df[enhancerdesign.definitions.MPRA_CELL_LINES_LOG2FC_COLS].values
+    y_valid = mpra_valid_df[enhancerdesign.definitions.MPRA_CELL_LINES_LOG2FC_COLS].values
+    y_test = mpra_test_df[enhancerdesign.definitions.MPRA_CELL_LINES_LOG2FC_COLS].values
 
     #######################################################
     # Stage 1: train new output layer into pretrained model
@@ -78,12 +71,12 @@ def finetune_model(
     print('Stage 1: training new output layer into pretrained model...')
 
     print('Loading pretrained model...')
-    pretrained_model = src.model.load_model(pretrained_model_path)
+    pretrained_model = enhancerdesign.model.load_model(pretrained_model_path)
 
     # Replace output with new output head for predicting log2FC measurements
     print('Adding new output head...')
     log2fc_output_head = tensorflow.keras.layers.Dense(
-        len(src.definitions.MPRA_CELL_LINES_LOG2FC_COLS),
+        len(enhancerdesign.definitions.MPRA_CELL_LINES_LOG2FC_COLS),
         activation='linear',
     )(pretrained_model.layers[-3].output)
 
@@ -102,13 +95,13 @@ def finetune_model(
 
     # Train model
     print('Training...')
-    stage1_loss = src.model.MSE_Cosine_Loss(w_mse=0.5, w_cosine=0.5)
+    stage1_loss = enhancerdesign.model.MSE_Cosine_Loss(w_mse=0.5, w_cosine=0.5)
     model.compile(
         optimizer=tensorflow.keras.optimizers.Adam(
             learning_rate=stage1_lrs[0], beta_1=0.9, beta_2=0.999),
         loss=stage1_loss,
     )
-    stage1_lr_scheduler = src.model.SequentialLearningScheduler(
+    stage1_lr_scheduler = enhancerdesign.model.SequentialLearningScheduler(
         stage1_lrs,
         patience=stage1_patience,
     )
@@ -135,13 +128,13 @@ def finetune_model(
             layer.trainable = False
 
     # Compile and train
-    stage2_loss = src.model.MSE_Cosine_Loss(w_mse=0.5, w_cosine=0.5)
+    stage2_loss = enhancerdesign.model.MSE_Cosine_Loss(w_mse=0.5, w_cosine=0.5)
     model.compile(
         optimizer=tensorflow.keras.optimizers.Adam(
             learning_rate=stage2_lrs[0], beta_1=0.9, beta_2=0.999),
         loss=stage2_loss,
     )
-    stage2_lr_scheduler = src.model.SequentialLearningScheduler(
+    stage2_lr_scheduler = enhancerdesign.model.SequentialLearningScheduler(
         stage2_lrs,
         patience=stage2_patience,
     )

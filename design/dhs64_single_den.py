@@ -31,8 +31,7 @@ import argparse
 import datetime
 import functools
 import json
-import os
-import sys
+import pathlib
 
 import numpy
 import matplotlib
@@ -50,19 +49,17 @@ import genesis.generator
 import genesis.predictor
 import genesis.optimizer
 
-BASE_DIR = '../'
-sys.path.append(BASE_DIR)
-import src.definitions
-import src.model
-import src.sequence
-import src.plot
-import src.utils
+import enhancerdesign.definitions
+import enhancerdesign.model
+import enhancerdesign.sequence
+import enhancerdesign.plot
+import enhancerdesign.utils
 
 import dhs64_single_den_generator
 
-BIOSAMPLE_META_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_BIOSAMPLE_META_PATH)
-DESIGN_MODEL_PATHS = [os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[i]) for i in [1, 3]]
-VAL_MODEL_PATH = os.path.join(BASE_DIR, src.definitions.DHS64_MODEL_PATH[0])
+BIOSAMPLE_META_PATH = enhancerdesign.definitions.DHS64_BIOSAMPLE_META_PATH
+DESIGN_MODEL_PATHS = [enhancerdesign.definitions.DHS64_MODEL_PATH[i] for i in [1, 3]]
+VAL_MODEL_PATH = enhancerdesign.definitions.DHS64_MODEL_PATH[0]
 
 ##################
 # Loss functions #
@@ -271,7 +268,7 @@ def train_den(
         Length of sequences to generate.
     target_idx : int
         Index of the target biosample within the model outputs.
-    models_design_filepath : list of str
+    models_design_filepath : list of str or pathlib.Path
         Filepaths to predictors used during design.
     fitness_loss_weight, seq_loss_weight, entropy_loss_weight, similarity_loss_weight : float
         Weights for each loss function term.
@@ -292,12 +289,13 @@ def train_den(
     enable_op_determinism : bool
         Whether to enable TensorFlow operation determinism. If enabled, model training is
         reproducible from the seed number, but training is slower.
-    output_dir : str
+    output_dir : str or pathlib.Path
         Directory to save output files.
     output_prefix : str
         Prefix for output files.
     
     """
+    output_dir = pathlib.Path(output_dir)
 
     # Set seeds before model creation
     if random_seed is not None:
@@ -308,12 +306,12 @@ def train_den(
     
     # Load design model ensemble
     # Load individual design models
-    models_design_list = [src.model.load_model(filepath) for filepath in models_design_filepath]
+    models_design_list = [enhancerdesign.model.load_model(filepath) for filepath in models_design_filepath]
     # Select first output head: continous accessibility prediction
-    models_design_list = [src.model.select_output_head(m, 0) for m in models_design_list]
+    models_design_list = [enhancerdesign.model.select_output_head(m, 0) for m in models_design_list]
     n_model_outputs = models_design_list[0].output.shape[-1]
     # Pessimistic ensemble: minimum across target biosample, maximum across non-target biosamples
-    model_design = src.model.make_model_ensemble(
+    model_design = enhancerdesign.model.make_model_ensemble(
         models_design_list,
         min_output_idx=[target_idx],
         max_output_idx=[i for i in range(n_model_outputs) if i != target_idx],
@@ -411,7 +409,7 @@ def train_den(
     generator.get_layer('lambda_rand_input_2').function = lambda inp: inp
 
     # Save models
-    generator_path = os.path.join(output_dir, f'{output_prefix}_generator.h5')
+    generator_path = output_dir / f'{output_prefix}_generator.h5'
     generator.save(generator_path)
 
     # Save training history
@@ -427,7 +425,7 @@ def train_den(
         train_history_df['similarity_loss'] /= similarity_loss_weight
     train_history_df.index.name = 'epoch'
     # Save dataframe
-    train_history_filepath = os.path.join(output_dir, f'{output_prefix}_training_history.csv')
+    train_history_filepath = output_dir / f'{output_prefix}_training_history.csv'
     train_history_df.to_csv(train_history_filepath)
 
     # Plot training history
@@ -443,7 +441,7 @@ def train_den(
         )
         ax.set_xlabel('Epoch')
         ax.set_title(col)
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_training_history.png"))
+    fig.savefig(output_dir / f"{output_prefix}_training_history.png")
 
 #################################
 # Main sequence design function #
@@ -475,7 +473,7 @@ def run(
         Number of sequences to generate.
     seq_length : int
         Length of sequences to generate.
-    output_dir : str
+    output_dir : str or pathlib.Path
         Directory to save output files.
     output_prefix : str or None
         Prefix for output files. If None, a prefix based on biosample index and name will be used.
@@ -488,8 +486,8 @@ def run(
 
     """
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    output_dir = pathlib.Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     
     # Load metadata of modeled biosamples
     biosample_metadata_df = pandas.read_excel(BIOSAMPLE_META_PATH)
@@ -497,7 +495,7 @@ def run(
 
     # Extract and sanitize biosample name
     target = biosamples[target_idx]
-    target_sanitized = src.utils.sanitize_str(target)
+    target_sanitized = enhancerdesign.utils.sanitize_str(target)
 
     # Prefix for output files
     if output_prefix is None:
@@ -558,8 +556,8 @@ def run(
             # Random seed for training
             'random_seed': random_seed_train,
         }
-        with open(os.path.join(output_dir, f'{output_prefix}_train_metadata.json'), 'w') as file:
-            file.write(json.dumps(train_parameters, indent=4))
+        with open(output_dir / f'{output_prefix}_train_metadata.json', 'w') as file:
+            file.write(json.dumps(train_parameters, indent=4, default=str))
             
         train_den(**train_parameters)
         print(f"Generator training complete for biosample {target} ({target_idx} / {len(biosamples)}).")
@@ -573,7 +571,7 @@ def run(
 
     # Load trained generator
     if generator_path is None:
-        generator_path = os.path.join(output_dir, f'{output_prefix}_generator.h5')
+        generator_path = output_dir / f'{output_prefix}_generator.h5'
     generator_model = dhs64_single_den_generator.load_generator(generator_path)
 
     # Generate sequences and make plots for each cell type target
@@ -591,14 +589,14 @@ def run(
     )
     _, _, _, _, _, sampled_pwm, _, _, _ = pred_outputs
     generated_onehot = sampled_pwm[:n_seqs, 0, :, :, 0]
-    generated_seqs = src.sequence.one_hot_decode(generated_onehot)
+    generated_seqs = enhancerdesign.sequence.one_hot_decode(generated_onehot)
     generated_seq_ids = [f'{output_prefix}_seq_{i}' for i in range(len(generated_seqs))]
     generated_df = pandas.DataFrame(
         {'seq_id': generated_seq_ids, 'seq': generated_seqs}
     )
-    src.sequence.save_seqs_to_fasta(
+    enhancerdesign.sequence.save_seqs_to_fasta(
         generated_df,
-        os.path.join(output_dir, f"{output_prefix}_seqs.fasta"),
+        output_dir / f"{output_prefix}_seqs.fasta",
         id_col='seq_id',
         seq_col='seq',
     )
@@ -607,13 +605,13 @@ def run(
 
     # Generate and save predictions from design model
     # Load individual design models and construct ensemble
-    models_design_list = [src.model.load_model(filepath) for filepath in DESIGN_MODEL_PATHS]
+    models_design_list = [enhancerdesign.model.load_model(filepath) for filepath in DESIGN_MODEL_PATHS]
     # Select first output head: continous accessibility prediction
-    models_design_list = [src.model.select_output_head(m, 0) for m in models_design_list]
+    models_design_list = [enhancerdesign.model.select_output_head(m, 0) for m in models_design_list]
     # Pessimistic ensemble: minimum across target biosample, maximum across non-target biosamples
     min_output_idx = [target_idx]
     max_output_idx = [i for i in range(len(biosamples)) if i != target_idx]
-    model_design = src.model.make_model_ensemble(
+    model_design = enhancerdesign.model.make_model_ensemble(
         models_design_list,
         min_output_idx=min_output_idx,
         max_output_idx=max_output_idx,
@@ -621,7 +619,7 @@ def run(
     )
 
     # Generate predictions
-    generated_onehot_padded = numpy.zeros((n_seqs, src.definitions.DHS64_INPUT_LENGTH, 4))
+    generated_onehot_padded = numpy.zeros((n_seqs, enhancerdesign.definitions.DHS64_INPUT_LENGTH, 4))
     generated_onehot_padded[:, :generated_onehot.shape[1], :] = generated_onehot
     generated_pred_design = model_design.predict(generated_onehot, verbose=1)
 
@@ -633,14 +631,14 @@ def run(
     generated_design_preds_df['seq'] = generated_seqs
     generated_design_preds_df[biosamples] = generated_pred_design
     generated_design_preds_df.to_csv(
-        os.path.join(output_dir, f"{output_prefix}_preds_design.csv.gz"),
+        output_dir / f"{output_prefix}_preds_design.csv.gz",
         index=False,
     )
 
     # Generate and save predictions from validation model
     # Load validation model
-    model_val = src.model.load_model(VAL_MODEL_PATH)
-    model_val = src.model.select_output_head(model_val, 0)
+    model_val = enhancerdesign.model.load_model(VAL_MODEL_PATH)
+    model_val = enhancerdesign.model.select_output_head(model_val, 0)
 
     generated_pred_val = model_val.predict(generated_onehot_padded, verbose=1)
     
@@ -651,7 +649,7 @@ def run(
     generated_val_preds_df['seq'] = generated_seqs
     generated_val_preds_df[biosamples] = generated_pred_val
     generated_val_preds_df.to_csv(
-        os.path.join(output_dir, f"{output_prefix}_preds_val.csv.gz"),
+        output_dir / f"{output_prefix}_preds_val.csv.gz",
         index=False,
     )
 
@@ -659,18 +657,18 @@ def run(
     print("\nGenerating plots...")
 
     # Sequence bitmap
-    ax = src.plot.plot_sequence_bitmap(generated_onehot)
+    ax = enhancerdesign.plot.sequence_bitmap(generated_onehot)
     fig = ax.get_figure()
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_seq_bitmap.png"))
+    fig.savefig(output_dir / f"{output_prefix}_seq_bitmap.png")
     pyplot.close(fig)
 
     # Sample sequences
-    fig = src.plot.plot_seq_logos(generated_onehot, n_seqs=10)
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_seqs.png"))
+    fig = enhancerdesign.plot.sequence_logos(generated_onehot, n_seqs=10)
+    fig.savefig(output_dir / f"{output_prefix}_seqs.png")
     pyplot.close(fig)
 
     # Distribution of edit distances
-    distances = src.sequence.get_paired_editdistances(generated_seqs)
+    distances = enhancerdesign.sequence.get_paired_editdistances(generated_seqs)
     fig, ax = pyplot.subplots(1, 1, figsize=(4, 3.5))
     seaborn.violinplot(data=[distances], ax=ax)
     ax.set_xticks([])
@@ -679,12 +677,12 @@ def run(
         'Edit distance / nucleotide\n'
         '{:.3f} +/- {:.3f}'.format(numpy.mean(distances), numpy.std(distances))
     )
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_editdistance.png"))
+    fig.savefig(output_dir / f"{output_prefix}_editdistance.png")
     pyplot.close(fig)
 
     # Distribution of kmer distances
     try:
-        distances = src.sequence.get_min_euc_nmer_dist(
+        distances = enhancerdesign.sequence.get_min_euc_nmer_dist(
             generated_seqs,
             nmer=4,
             random_seed_subsample=2020,
@@ -700,7 +698,7 @@ def run(
         '4-mer distance\n'
         '{:.3f} +/- {:.3f}'.format(numpy.mean(distances), numpy.std(distances))
     )
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_4mer_distance.png"))
+    fig.savefig(output_dir / f"{output_prefix}_4mer_distance.png")
     pyplot.close(fig)
 
     # Design predictions across biosamples
@@ -731,7 +729,7 @@ def run(
             label.set_fontweight('bold')
     ax.set_xlabel('Biosample')
     ax.set_ylabel('$log_{10}$ accessibility prediction\nDesign model')
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_preds_design_boxplot.png"))
+    fig.savefig(output_dir / f"{output_prefix}_preds_design_boxplot.png")
     pyplot.close(fig)
 
     # Validation predictions
@@ -762,7 +760,7 @@ def run(
             label.set_fontweight('bold')
     ax.set_xlabel('Biosample')
     ax.set_ylabel('$log_{10}$ accessibility prediction\nValidation model')
-    fig.savefig(os.path.join(output_dir, f"{output_prefix}_preds_val_boxplot.png"))
+    fig.savefig(output_dir / f"{output_prefix}_preds_val_boxplot.png")
     pyplot.close(fig)
 
     print(f"\nDone with biosample {target} ({target_idx} / {len(biosamples)}).")
