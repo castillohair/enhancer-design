@@ -113,4 +113,6 @@ pip install -r requirements.txt
 
 `requirements.txt` was generated from `uv.lock` and carries the same pinned versions. It also installs `enhancerdesign` in editable mode.
 
+Either method requires `git` and a C++ compiler. With a Linux system Python, also install its development headers (e.g. `sudo dnf install python3.11-devel` or `sudo apt install python3.11-dev`).
+
 Then, refer to each individual folder to run scripts for data download, model training, sequence design, and analysis.
