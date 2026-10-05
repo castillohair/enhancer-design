@@ -4,7 +4,7 @@ The datasets described below are necessary for different model training, sequenc
 
 ## Data for training accessibility models
 
-Processed data necessary for model training and some analysis will be downloaded into the [`dhs_index`](./dhs_index/) subfolder. The [`process_data.ipynb`](./dhs_index/process_data.ipynb) notebook reproduces our data processing workflow starting from raw published sources, but re-running this should not be necessary in most cases. The [`dhs733_create_output_transformation_matrix.ipynb`](./dhs_index/dhs733_create_output_transformation_matrix.ipynb) notebook generates the list of non-redundant DHS733 biosamples and the matrix that averages redundant DHS733 outputs, both stored in `dhs_index/dhs733_training` and used for DHS733-based design.
+Processed data necessary for model training and some analysis will be downloaded into the [`dhs_index`](./dhs_index/) subfolder. The [`process_data.ipynb`](./dhs_index/process_data.ipynb) notebook reproduces our data processing workflow starting from raw published sources, but re-running this should not be necessary in most cases. This notebook also generates the list of non-redundant DHS733 biosamples and the matrix that averages redundant DHS733 outputs, both stored in `dhs_index/dhs733_training` and used for DHS733-based design.
 
 ## Cell line and mouse retina MPRA results
 
